@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/img/favicon.ico" sizes="16x16" type="image/x-icon">
+  <title>Detalle de Ítem - GW2</title>
+  <link rel="stylesheet" href="css/global-gw.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <!-- El menú de navegación se insertará aquí automáticamente -->
+  </header>
+
+  <section class="services-menu">
+    <div class="menu-grid-craft">
+      <a href="#" class="menu-card-search-craft" id="open-search-modal">
+        <div class="card-icon-craft">
+          <img src="img/search.svg" alt="Buscador">
+        </div>
+        <div class="card-title">Buscador</div>
+      </a>
+    </div>
+  </section>
+
+  
+    <div class="container-header">
+      <div id="item-header"></div>
+      <div id="wiki-links"></div>
+    </div>
+    <!-- Botones de navegación -->
+    <nav class="item-tabs-nav">
+      <button class="item-tab-btn" data-tab="info-item">Crafteo</button>
+      <button class="item-tab-btn" data-tab="resumen-mercado">Resumen Mercado</button>
+      <button class="item-tab-btn" data-tab="tab-mejores-horas-content">Actividad Reciente</button>
+      <button class="item-tab-btn" id="btn-guardar-item">Guardar ítem</button>
+    </nav>
+    
+    <div class="container">
+      <div id="info-item">
+        <div id="loader" class="loader" style="display:none;"></div>
+        <div id="error-message" class="error-message" style="display:none;"></div>
+        <div id="seccion-totales"></div>
+        <div id="seccion-comparativa"></div>
+        <div id="seccion-crafting"></div>
+      </div>
+      <div id="resumen-mercado" style="display:none;"></div>
+      <div id="tab-mejores-horas-content" style="display:none;">
+        <div class="card">
+          <h3>Ventas y Compras por Hora</h3>
+          <canvas id="ventas-compras-chart" height="120"></canvas>
+          <h3 style="margin:18px 0 8px 0;font-weight:600;font-size:1.18rem;">Datos de las últimas 24 horas</h3>
+          <div id="hora-punta" class="highlight-info"></div>
+        </div>
+        <div class="card indicators" style="display:flex;flex-wrap:wrap;gap:18px;">
+          <div class="indicator" id="promedio-hora"></div>
+          <div class="indicator" id="promedio-dia"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+      
+
+
+  <!-- Modal del Buscador fuera de .container para igualar a index.html -->
+  <div id="search-modal" class="search-modal" style="display:none;">
+    <div class="search-modal-backdrop"></div>
+    <div class="search-modal-content">
+      <button class="close-modal" id="close-search-modal"></button>
+      <input type="text" id="modal-search-input" placeholder="Buscar ítem por nombre..." autocomplete="off">
+      <ul id="modal-suggestions" class="suggestions"></ul>
+      <div id="modal-loader" class="loader" style="display:none;"></div>
+      <div id="modal-error-message" class="error-message" style="display:none;"></div>
+      <div id="modal-results" class="item-list"></div>
+    </div>
+  </div>
+  <script src="js/modal-utils.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const openBtn = document.getElementById('open-search-modal');
+    const modal = document.getElementById('search-modal');
+    const closeBtn = document.getElementById('close-search-modal');
+    openBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      openSearchModal();
+    });
+    closeBtn.addEventListener('click', closeSearchModal);
+    modal.querySelector('.search-modal-backdrop').addEventListener('click', closeSearchModal);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeSearchModal();
+    });
+  });
+  </script>
+
+<script src="js/formatGold.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Inicializar autenticación cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.Auth && typeof window.Auth.initAuth === 'function') {
+      window.Auth.initAuth();
+    }
+  });
+</script>
+<script>
+  // Ocultar pestañas de mercado y actividad si no hay usuario autenticado
+  document.addEventListener('DOMContentLoaded', function() {
+    const loggedIn = !!localStorage.getItem('auth_token');
+    if (!loggedIn) {
+      document.querySelectorAll(
+        '.item-tab-btn[data-tab="resumen-mercado"],\
+        .item-tab-btn[data-tab="tab-mejores-horas-content"]'
+      ).forEach(el => el.style.display = 'none');
+
+      const resumen = document.getElementById('resumen-mercado');
+      if (resumen) resumen.style.display = 'none';
+
+      const mejores = document.getElementById('tab-mejores-horas-content');
+      if (mejores) mejores.style.display = 'none';
+    }
+  });
+</script>
+<script src="js/navigation.js"></script>
+<script src="js/feedback-modal.js"></script>
+<script src="js/item-tabs.js"></script>
+<script src="js/services/recipeService.js"></script>
+<script src="js/utils/recipeUtils.js"></script>
+<script src="js/item-mejores.js"></script>
+<script src="js/itemHandlers.js"></script>
+<script src="js/storageUtils.js"></script>
+<script src="js/rarityUtils.js"></script>
+<script src="js/item-ui.js"></script>
+<script type="module" src="js/item.js"></script>
+  
+  <!-- Inicialización -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Verificar si hay un ID de ítem en la URL
+      const params = new URLSearchParams(window.location.search);
+      const itemId = parseInt(params.get('id'), 10);
+      
+      // Verificar funciones requeridas
+      const funcionesRequeridas = ['cargarMejoresHorasYMercado', 'StorageUtils'];
+      let todasDisponibles = true;
+      
+      funcionesRequeridas.forEach(func => {
+        if (!window[func]) {
+          todasDisponibles = false;
+        }
+      });
+      
+      // Si todo está bien, cargar los datos del ítem
+      if (todasDisponibles && itemId) {
+        window.cargarMejoresHorasYMercado(itemId);
+      }
+    });
+  </script>
+  
+</body>
+</html>
