@@ -70,8 +70,8 @@ export function findIngredientByPath(ings, pathArr) {
   let current = ings;
   let ing = null;
   for (let i = 0; i < pathArr.length; i++) {
-    const uid = pathArr[i];
-    ing = (current || []).find(n => String(n._uid) === String(uid));
+    const val = pathArr[i];
+    ing = (current || []).find(n => String(n._uid) === String(val) || String(n.id) === String(val));
     if (!ing) return null;
     current = ing.children;
   }
