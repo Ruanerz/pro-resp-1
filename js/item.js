@@ -1,3 +1,16 @@
+import {
+  setIngredientObjs,
+  setGlobalQty,
+  snapshotExpandState,
+  restoreExpandState,
+  recalcAll,
+  getTotals,
+  findIngredientByIdAndParent,
+  findIngredientByPath,
+  findIngredientByUid,
+  findIngredientById,
+  calcPercent
+} from './items-core.js';
 
   // GW2 Item Tracker v2 - Integración con DataWars2 API v2
   
@@ -104,11 +117,6 @@
   const itemHeader = document.getElementById('item-header');
   
   // Elementos del DOM
-  
-  function calcPercent(sold, available) {
-    if (!sold || !available || isNaN(sold) || isNaN(available) || available === 0) return '-';
-    return ((sold / available) * 100).toFixed(1) + '%';
-  }
   
   
   // --- Fin de formatGold ---
@@ -783,119 +791,6 @@ const precioVentaUnidadMercado = (mainNode && typeof mainNode.sell_price === 'nu
   
   
   
-  function findIngredientByUid(ings, uid) {
-    for (const ing of ings) {
-      if (String(ing._uid) === String(uid)) return ing;
-      if (ing.children && ing.children.length) {
-        const found = findIngredientByUid(ing.children, uid);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-  // Mantener función anterior por compatibilidad (usada en secciones viejas)
-  function findIngredientById(ings, id) {
-    for (const ing of ings) {
-      if (String(ing.id) === String(id)) return ing;
-      if (ing.children && ing.children.length) {
-        const found = findIngredientById(ing.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-
-  // --- Lógica de negocio compartida con item-ui.js ---
-  function setIngredientObjs(val) {
-    window.ingredientObjs = val;
-  }
-
-  function setGlobalQty(val) {
-    window.globalQty = val;
-  }
-
-  function snapshotExpandState(ings) {
-    if (!ings) return [];
-    return ings.map(ing => ({
-      id: ing.id,
-      expanded: ing.expanded,
-      children: snapshotExpandState(ing.children || [])
-    }));
-  }
-
-  function restoreExpandState(ings, snapshot) {
-    if (!ings || !snapshot) return;
-    for (let i = 0; i < ings.length; i++) {
-      if (snapshot[i]) {
-        ings[i].expanded = snapshot[i].expanded;
-        restoreExpandState(ings[i].children, snapshot[i].children);
-      }
-    }
-  }
-
-  function recalcAll(ingredientObjs, globalQty) {
-    if (!ingredientObjs) return;
-    ingredientObjs.forEach((ing, idx) => {
-      if (idx === 0) {
-        ing.recalc(globalQty, null, null, true);
-      } else {
-        ing.recalc(globalQty);
-      }
-    });
-  }
-
-  function getTotals(ingredientObjs) {
-    let totalBuy = 0, totalSell = 0, totalCrafted = 0;
-    for (const ing of ingredientObjs) {
-      totalBuy += ing.total_buy || 0;
-      totalSell += ing.total_sell || 0;
-      // Si el ingrediente no es crafteable, usar el costo de compra
-      const craftedVal =
-        (ing.total_crafted !== undefined && ing.total_crafted !== null)
-          ? ing.total_crafted
-          : ing.total_buy || 0;
-      totalCrafted += craftedVal;
-    }
-    return { totalBuy, totalSell, totalCrafted };
-  }
-
-  function findIngredientByIdAndParent(ings, id, parentId) {
-    for (const ing of ings) {
-      if (String(ing.id) === String(id) && String(ing._parentId) === String(parentId)) {
-        return ing;
-      }
-      if (Array.isArray(ing.children) && ing.children.length) {
-        const found = findIngredientByIdAndParent(ing.children, id, parentId);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-
-  function findIngredientByPath(ings, pathArr) {
-    let current = ings;
-    let ing = null;
-    for (let i = 0; i < pathArr.length; i++) {
-      const uid = pathArr[i];
-      ing = (current || []).find(n => String(n._uid) === String(uid));
-      if (!ing) return null;
-      current = ing.children;
-    }
-    return ing;
-  }
-
-  // Exponer funciones para item-ui.js
-  window.setIngredientObjs = setIngredientObjs;
-  window.setGlobalQty = setGlobalQty;
-  window.snapshotExpandState = snapshotExpandState;
-  window.restoreExpandState = restoreExpandState;
-  window.recalcAll = recalcAll;
-  window.getTotals = getTotals;
-  window.findIngredientByIdAndParent = findIngredientByIdAndParent;
-  window.findIngredientByPath = findIngredientByPath;
-  window.findIngredientByUid = findIngredientByUid;
-  window.findIngredientById = findIngredientById;
-  window.calcPercent = calcPercent;
   
   
   
