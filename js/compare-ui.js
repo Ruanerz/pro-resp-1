@@ -1,7 +1,7 @@
 // GW2 Item Tracker v2 - UI Y PRESENTACIÓN (item-ui.js)
 import {
   CraftIngredient
-} from './compare-logic.js';
+} from './items-core.js';
 import {
   setIngredientObjs,
   setGlobalQty,
