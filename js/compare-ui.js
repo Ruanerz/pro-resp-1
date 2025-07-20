@@ -2,52 +2,20 @@
 import {
   CraftIngredient
 } from './compare-logic.js';
+import {
+  setIngredientObjs,
+  setGlobalQty,
+  snapshotExpandState,
+  restoreExpandState,
+  recalcAll,
+  getTotals,
+  findIngredientById,
+  findIngredientByIdAndParent,
+  findIngredientByPath,
+  calcPercent
+} from './items-core.js';
 
-// --- Setter local para el arreglo de ingredientes (igual que en item.js) ---
-function setIngredientObjs(val) {
-  window.ingredientObjs = val;
-}
-
-// --- Setter local para la cantidad global (igual que en item.js) ---
-function setGlobalQty(val) {
-  window.globalQty = val;
-}
-
-// --- Helpers para guardar/restaurar el estado expandido (locales, igual que en item.js) ---
-function snapshotExpandState(ings) {
-  if (!ings) return [];
-  return ings.map(ing => ({
-    id: ing.id,
-    expanded: ing.expanded,
-    children: snapshotExpandState(ing.children || [])
-  }));
-}
-function restoreExpandState(ings, snapshot) {
-  if (!ings || !snapshot) return;
-  for (let i = 0; i < ings.length; i++) {
-    if (snapshot[i]) {
-      ings[i].expanded = snapshot[i].expanded;
-      restoreExpandState(ings[i].children, snapshot[i].children);
-    }
-  }
-}
-
-// --- Helper para recalcular todos los ingredientes (local, igual que en item.js) ---
-function recalcAll(ingredientObjs, globalQty) {
-  if (!ingredientObjs) return;
-  ingredientObjs.forEach(ing => ing.recalc(globalQty));
-}
-
-// --- Helper para totales (local, igual que en item.js) ---
-function getTotals(ingredientObjs) {
-  let totalBuy = 0, totalSell = 0, totalCrafted = 0;
-  for (const ing of ingredientObjs) {
-    totalBuy += ing.total_buy || 0;
-    totalSell += ing.total_sell || 0;
-    totalCrafted += ing.total_crafted || 0;
-  }
-  return { totalBuy, totalSell, totalCrafted };
-}
+// Functions imported from items-core.js provide shared logic
 
 // --- Helpers para el input de cantidad global (definidos localmente) ---
 function setQtyInputValue(val) {
@@ -66,48 +34,10 @@ function getQtyInputValue() {
   return input ? parseInt(input.value, 10) : 1;
 }
 
-// --- Función local para buscar ingrediente por ID (recursiva, igual que en item.js) ---
-// Busca ingrediente por id simple (para expand/collapse)
-function findIngredientById(ings, id) {
-  for (const ing of ings) {
-    if (!ing || typeof ing !== 'object' || typeof ing.id === 'undefined') continue;
-    if (typeof ing.then === 'function') continue;
-    if (String(ing.id) === String(id)) return ing;
-    if (Array.isArray(ing.children) && ing.children.length) {
-      const found = findIngredientById(ing.children, id);
-      if (found) return found;
-    }
-  }
-  return null;
-}
-
-// Busca ingrediente por id y parentId
 function isEquivalentParentId(a, b) {
-  // Equivalentes si ambos son null, undefined, "null", o "" (vacío)
   const nullLikes = [null, undefined, "null", ""];
   return (nullLikes.includes(a) && nullLikes.includes(b)) || String(a) === String(b);
 }
-
-function findIngredientByIdAndParent(ings, id, parentId) {
-  for (const ing of ings) {
-    if (!ing || typeof ing !== 'object' || typeof ing.id === 'undefined') continue;
-    if (typeof ing.then === 'function') continue; // Ignorar promesas
-
-    // DEBUG: Imprime los valores que compara
-
-    if (
-      String(ing.id) === String(id) &&
-      isEquivalentParentId(ing._parentId, parentId)
-    ) {
-      return ing;
-    }
-    if (Array.isArray(ing.children) && ing.children.length) {
-      const found = findIngredientByIdAndParent(ing.children, id, parentId);
-      if (found) return found;
-    }
-  }
-}
-window.findIngredientByIdAndParent = findIngredientByIdAndParent;
 
 // --- Helpers visuales ---
 
@@ -128,11 +58,7 @@ window.checkTreeForInvalidIds = checkTreeForInvalidIds;
 // Llama a esto tras inicializar window.ingredientObjs, antes de renderizar:
 // checkTreeForInvalidIds(window.ingredientObjs);
 
-// --- Función para calcular porcentajes (copiada de item.js) ---
-function calcPercent(sold, available) {
-  if (!sold || !available || isNaN(sold) || isNaN(available) || available === 0) return '-';
-  return ((sold / available) * 100).toFixed(1) + '%';
-}
+
 
 
 function renderWiki(name) {
@@ -236,19 +162,6 @@ if (!window._modeChangeHandlerInstalled) {
 // Handler global para expandir/collapse ingredientes hijos
 // DEPURACIÓN: logs antes y después de buscar/cambiar expanded
 if (!window._expandBtnHandlerInstalled) {
-  // Búsqueda robusta por path completo (único en toda la tabla)
-  function findIngredientByPath(ings, pathArr) {
-    let current = ings;
-    let ing = null;
-    for (let i = 0; i < pathArr.length; i++) {
-      const id = pathArr[i];
-      ing = (current || []).find(n => String(n.id) === String(id));
-      if (!ing) return null;
-      current = ing.children;
-    }
-    return ing;
-  }
-  window.findIngredientByPath = findIngredientByPath;
   window._expandBtnHandlerInstalled = true;
   // Handler único para expand/collapse por data-path está en installUIEvents o más abajo.
 }
