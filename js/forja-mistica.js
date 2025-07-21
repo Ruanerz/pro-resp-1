@@ -1,21 +1,5 @@
-import { fetchItemPrices } from './fractales-gold-ui.js';
+import { fetchItemPrices, fetchIconsFor, iconCache } from './fractales-utils.js';
 
-// Cache local de iconos para esta página
-const iconCache = {};
-
-// Obtiene iconos desde la API de GW2 y los guarda en iconCache
-async function fetchIcons(ids = []) {
-  if (!ids.length) return;
-  try {
-    const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${ids.join(',')}&lang=es`);
-    const data = await res.json();
-    data.forEach(item => {
-      if (item && item.id) iconCache[item.id] = item.icon;
-    });
-  } catch {
-    // Silenciar errores de carga de iconos
-  }
-}
 
 function addIconToCell(cell, icon) {
   if (!cell || !icon) return;
@@ -83,7 +67,7 @@ export async function renderTablaForja() {
     MATERIAL_IDS.piedra
   ];
   const priceMap = await fetchItemPrices(ids);
-  await fetchIcons(ids);
+  await fetchIconsFor(ids);
 
   keys.forEach(key => {
     const row = document.querySelector(`#matt5t6 tr[data-key="${key}"]`);
@@ -126,7 +110,7 @@ export async function renderTablaLodestones() {
   ];
 
   const priceMap = await fetchItemPrices(ids);
-  await fetchIcons(ids);
+  await fetchIconsFor(ids);
 
   coreKeys.forEach(key => {
     const row = document.querySelector(`#tabla-lodestones tr[data-key="${key}"]`);
