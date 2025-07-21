@@ -331,10 +331,10 @@ function renderCraftingSectionUI() {
   // --- DEBUG: Mostrar todos los valores clave ---
 
   // Obtener output_item_count de la receta principal
-  const outputCount = (_mainRecipeOutputCount && !isNaN(_mainRecipeOutputCount)) ? _mainRecipeOutputCount : 1;
+  const outputCount = (window._mainRecipeOutputCount && !isNaN(window._mainRecipeOutputCount)) ? window._mainRecipeOutputCount : 1;
   const totals = getTotals(window.ingredientObjs);
   const qtyValue = (typeof getQtyInputValue() !== 'undefined' ? getQtyInputValue() : window.globalQty);
-  const precioCompraTotal = (_mainBuyPrice != null) ? _mainBuyPrice * window.globalQty : 0;
+  const precioCompraTotal = (window._mainBuyPrice != null) ? window._mainBuyPrice * window.globalQty : 0;
   // Suma el sell_price de todos los ítems raíz
   const totalSellPrice = window.ingredientObjs.reduce((sum, ing) => sum + (Number(ing.sell_price) || 0), 0);
   const precioVentaTotal = totalSellPrice * window.globalQty;
@@ -361,7 +361,7 @@ function renderCraftingSectionUI() {
   const profitSellTotal = ventaTrasComisionTotal - totals.totalSell;
   const profitCraftedTotal = ventaTrasComisionTotal - totals.totalCrafted;
   // Variables para profit por unidad (outputCount > 1)
-  const precioVentaUnidadMercado = (_mainSellPrice != null) ? _mainSellPrice : 0;
+  const precioVentaUnidadMercado = (window._mainSellPrice != null) ? window._mainSellPrice : 0;
   const ventaTrasComisionUnidadMercado = precioVentaUnidadMercado - (precioVentaUnidadMercado * 0.15);
   const profitBuyUnidadMercado = ventaTrasComisionUnidadMercado - (totals.totalBuy / outputCount);
   const profitSellUnidadMercado = ventaTrasComisionUnidadMercado - (totals.totalSell / outputCount);
@@ -439,8 +439,8 @@ function renderCraftingSectionUI() {
       </section>`;
   }
   if (outputCount > 1) {
-    const precioCompraUnidadMercado = (_mainBuyPrice != null) ? _mainBuyPrice : 0;
-    const precioVentaUnidadMercado = (_mainSellPrice != null) ? _mainSellPrice : 0;
+    const precioCompraUnidadMercado = (window._mainBuyPrice != null) ? window._mainBuyPrice : 0;
+    const precioVentaUnidadMercado = (window._mainSellPrice != null) ? window._mainSellPrice : 0;
     const precioCraftingMinUnidadReal = outputCount > 0 ? precioCraftingMinTotal / outputCount : precioCraftingMinTotal;
     const preciosUnidadCorr = [precioCompraUnidadMercado, precioVentaUnidadMercado, precioCraftingMinUnidadReal];
     const precioMinimoUnidadReal = Math.min(...preciosUnidadCorr.filter(x => x > 0));

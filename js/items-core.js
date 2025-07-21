@@ -4,6 +4,9 @@
 if (typeof window !== 'undefined') {
   window.ingredientObjs = window.ingredientObjs || [];
   window.globalQty = window.globalQty || 1;
+  window._mainBuyPrice = window._mainBuyPrice || 0;
+  window._mainSellPrice = window._mainSellPrice || 0;
+  window._mainRecipeOutputCount = window._mainRecipeOutputCount || 1;
 }
 
 export function setIngredientObjs(val) {
@@ -380,6 +383,9 @@ window.comparativa.agregarItemPorId = async function(id) {
       let hijos = await prepareIngredientTreeData(id, recipeData);
       if (!Array.isArray(hijos)) hijos = [];
       const marketData = await fetchMarketDataForItem(id);
+      window._mainBuyPrice = marketData.buy_price || 0;
+      window._mainSellPrice = marketData.sell_price || 0;
+      window._mainRecipeOutputCount = recipeData ? (recipeData.output_item_count || 1) : 1;
       ingredientesArbol = new CraftIngredient({
         id: itemData.id,
         name: itemData.name,
@@ -395,6 +401,9 @@ window.comparativa.agregarItemPorId = async function(id) {
       ingredientesArbol.recalc(window.globalQty || 1, null);
     } else {
       const marketData = await fetchMarketDataForItem(id);
+      window._mainBuyPrice = marketData.buy_price || 0;
+      window._mainSellPrice = marketData.sell_price || 0;
+      window._mainRecipeOutputCount = 1;
       ingredientesArbol = new CraftIngredient({
         id: itemData.id,
         name: itemData.name,
