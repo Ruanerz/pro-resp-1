@@ -112,7 +112,7 @@ function renderRows(ings, nivel = 1, parentId = null, rowGroupIndex = 0, parentE
             // Nodos hoja (sin hijos) ocultan todo, salvo casos anteriores ya tratados
             (!hideTotals ? `
               <div>${formatGoldColored(ing.total_crafted || ing.total_buy)}</div>
-              <div class="item-solo-precio">${ing.is_craftable ? formatGoldColored(craftedPriceSafe) : formatGoldColored(ing.buy_price)} <span style="color: #c99b5b">c/u</span></div>
+              <div class="item-solo-precio">${ing.is_craftable ? formatGoldColored(craftedPriceSafe) : formatGoldColored(0)} <span style="color: #c99b5b">c/u</span></div>
               ${parentId !== null && nivel > 0 ? `<input type="radio" name="mode-${ing._uid}" class="chk-mode-crafted" data-uid="${ing._uid}" ${ing.modeForParentCrafted === 'crafted' ? 'checked' : ''} title="Usar precio de crafteo para el padre">` : ''}
             ` :
               ``
