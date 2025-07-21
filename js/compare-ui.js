@@ -391,7 +391,7 @@ function renderCraftingSectionUI() {
           <th><div class="tooltip-modern">Total Crafted
             <span class="tooltiptext-modern">Suma total si CRAFTEAS todos los materiales posibles desde cero.</span>
           </div></th>
-          <td class="item-solo-crafted">${formatGoldColored(totals.totalCrafted)}</td>
+          <td class="item-solo-crafted">${formatGoldColored(0)}</td>
         </tr>
       </table>
     </div>
@@ -414,7 +414,7 @@ function renderCraftingSectionUI() {
             <th><div class="tooltip-modern">Total Crafted
               <span class="tooltiptext-modern">Suma total si CRAFTEAS todos los materiales posibles desde cero.</span>
             </div></th>
-            <td class="item-solo-crafted">${formatGoldColored(totals.totalCrafted / outputCount)}</td>
+            <td class="item-solo-crafted">${formatGoldColored(0)}</td>
           </tr>
         </table>
       </div>
