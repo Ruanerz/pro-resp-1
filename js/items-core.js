@@ -378,11 +378,12 @@ window.comparativa.agregarItemPorId = async function(id) {
     if (typeof window.showLoader === 'function') window.showLoader(true);
     const itemData = await fetchItemData(id);
     const recipeData = await fetchRecipeData(id);
+    let marketData;
     let ingredientesArbol;
     if (recipeData) {
       let hijos = await prepareIngredientTreeData(id, recipeData);
       if (!Array.isArray(hijos)) hijos = [];
-      const marketData = await fetchMarketDataForItem(id);
+      marketData = await fetchMarketDataForItem(id);
       window._mainBuyPrice = marketData.buy_price || 0;
       window._mainSellPrice = marketData.sell_price || 0;
       window._mainRecipeOutputCount = recipeData ? (recipeData.output_item_count || 1) : 1;
@@ -400,7 +401,7 @@ window.comparativa.agregarItemPorId = async function(id) {
       });
       ingredientesArbol.recalc(window.globalQty || 1, null);
     } else {
-      const marketData = await fetchMarketDataForItem(id);
+      marketData = await fetchMarketDataForItem(id);
       window._mainBuyPrice = marketData.buy_price || 0;
       window._mainSellPrice = marketData.sell_price || 0;
       window._mainRecipeOutputCount = 1;
