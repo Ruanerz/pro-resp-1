@@ -419,7 +419,13 @@ window.comparativa.agregarItemPorId = async function(id) {
       });
     }
     window.ingredientObjs.push(ingredientesArbol);
-    if (typeof window.safeRenderTable === 'function') window.safeRenderTable(marketData.buy_price, marketData.sell_price);
+    if (typeof window.safeRenderTable === 'function') {
+      if (typeof marketData.buy_price === 'number' && typeof marketData.sell_price === 'number') {
+        window.safeRenderTable(marketData.buy_price, marketData.sell_price);
+      } else {
+        window.safeRenderTable();
+      }
+    }
     if (typeof window.showLoader === 'function') window.showLoader(false);
   } catch (e) {
     if (typeof window.showLoader === 'function') window.showLoader(false);
