@@ -101,18 +101,18 @@ function renderRows(ings, nivel = 1, parentId = null, rowGroupIndex = 0, parentE
             // Nodo raíz SIEMPRE muestra total crafted
             (isRoot && ing.is_craftable) ? `
               <div>${formatGoldColored(ing.total_crafted)}</div>
-              <div class="item-solo-precio">${formatGoldColored(craftedPriceSafe)} <span style="color: #c99b5b">c/u</span></div>
+              <div class="item-solo-precio">${formatGoldColored(0)} <span style="color: #c99b5b">c/u</span></div>
             ` :
             // Ingredientes padre sin precio de mercado también lo muestran aunque sean el último hijo
             (parentId !== null && nivel > 0 && ing.is_craftable && noMarketPrice) ? `
               <div>${formatGoldColored(ing.total_crafted)}</div>
-              <div class="item-solo-precio">${formatGoldColored(craftedPriceSafe)} <span style="color: #c99b5b">c/u</span></div>
+              <div class="item-solo-precio">${formatGoldColored(0)} <span style="color: #c99b5b">c/u</span></div>
               <input type="radio" name="mode-${ing._uid}" class="chk-mode-crafted" data-uid="${ing._uid}" ${ing.modeForParentCrafted === 'crafted' ? 'checked' : ''} title="Usar precio de crafteo para el padre">
             ` :
             // Nodos hoja (sin hijos) ocultan todo, salvo casos anteriores ya tratados
             (!hideTotals ? `
               <div>${formatGoldColored(ing.total_crafted ?? 0)}</div>
-              <div class="item-solo-precio">${ing.is_craftable ? formatGoldColored(craftedPriceSafe) : formatGoldColored(0)} <span style="color: #c99b5b">c/u</span></div>
+              <div class="item-solo-precio">${formatGoldColored(0)} <span style="color: #c99b5b">c/u</span></div>
               ${parentId !== null && nivel > 0 ? `<input type="radio" name="mode-${ing._uid}" class="chk-mode-crafted" data-uid="${ing._uid}" ${ing.modeForParentCrafted === 'crafted' ? 'checked' : ''} title="Usar precio de crafteo para el padre">` : ''}
             ` :
               ``
