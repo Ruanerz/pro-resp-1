@@ -169,15 +169,16 @@ function renderMainItemRow(mainNode, nivel = 0) {
 
 // --- Renderizado de la sección 7: Ingredientes para craftear ---
 function renderCraftingSectionUI() {
+  const ingList = window.ingredientObjs || [];
   // Asegurar que los datos estén recalculados antes de leer los totales
-  if (window.ingredientObjs && window.ingredientObjs.length > 0) {
-    recalcAll(window.ingredientObjs, window.globalQty);
+  if (ingList.length > 0) {
+    recalcAll(ingList, window.globalQty);
   }
 
   // Obtener output_item_count de la receta principal
   // Cálculo robusto del outputCount como en la comparativa:
   let outputCount = 1;
-  const mainRoot = window.ingredientObjs && window.ingredientObjs.length > 0 ? window.ingredientObjs[0] : null;
+  const mainRoot = ingList.length > 0 ? ingList[0] : null;
   if (mainRoot && mainRoot.recipe && mainRoot.recipe.output_item_count && !isNaN(mainRoot.recipe.output_item_count)) {
     outputCount = mainRoot.recipe.output_item_count;
   } else if (window._mainRecipeOutputCount && !isNaN(window._mainRecipeOutputCount)) {
@@ -196,7 +197,7 @@ function renderCraftingSectionUI() {
   }
 
   // Los detalles de artesanía ya se muestran en el encabezado del ítem
-  const mainNode = window.ingredientObjs && window.ingredientObjs.length > 0 ? window.ingredientObjs[0] : null;
+  const mainNode = ingList.length > 0 ? ingList[0] : null;
 
   const qtyValue = (typeof getQtyInputValue() !== 'undefined' ? getQtyInputValue() : window.globalQty);
   // Mostrar el precio de mercado directo del ítem (buy_price * cantidad global)
@@ -433,7 +434,7 @@ const precioVentaTotal = mainNode && typeof mainNode.sell_price === 'number' ? m
           <th class="th-border-right"></th>
         </tr>
       </thead>
-      <tbody>${renderRows(window.ingredientObjs)}</tbody>
+        <tbody>${renderRows(ingList)}</tbody>
     </table>
     ${tablaTotales}
     ${outputCount > 1 ? tablaTotalesUnidad : ''}
@@ -663,7 +664,7 @@ function installUIEvents() {
         if (typeof window._qtyInputValue !== 'undefined' && String(window._qtyInputValue) === String(window.globalQty)) {
           delete window._qtyInputValue;
         }
-        window.ingredientObjs.forEach(ing => ing.recalc(window.globalQty));
+        (window.ingredientObjs || []).forEach(ing => ing.recalc(window.globalQty));
         const node = document.querySelector('#seccion-crafting, div#seccion-crafting');
         if (node) node.innerHTML = renderCraftingSectionUI();
       }
@@ -684,7 +685,7 @@ function installUIEvents() {
         if (typeof window._qtyInputValue !== 'undefined' && String(window._qtyInputValue) === String(window.globalQty)) {
           delete window._qtyInputValue;
         }
-        window.ingredientObjs.forEach(ing => ing.recalc(window.globalQty));
+        (window.ingredientObjs || []).forEach(ing => ing.recalc(window.globalQty));
         const node = document.querySelector('#seccion-crafting, div#seccion-crafting');
         if (node) node.innerHTML = renderCraftingSectionUI();
       }
@@ -698,7 +699,7 @@ function installUIEvents() {
   
     const uid = input.dataset.uid;
     if (!uid) return;
-    const ing = findIngredientByUid(window.ingredientObjs, uid);
+    const ing = findIngredientByUid(window.ingredientObjs || [], uid);
     if (!ing) return;
   
     if (input.classList.contains('chk-mode-buy')) {
@@ -709,7 +710,7 @@ function installUIEvents() {
       ing.modeForParentCrafted = 'crafted';
     }
   
-    recalcAll(window.ingredientObjs, window.globalQty);
+    recalcAll(window.ingredientObjs || [], window.globalQty);
     safeRenderTable();
   });
 
@@ -720,7 +721,7 @@ function installUIEvents() {
     const pathStr = btn.getAttribute('data-path');
     if (!pathStr) return;
     const path = pathStr.split('-').map(x => x.trim());
-    const ing = findIngredientByPath(window.ingredientObjs, path);
+    const ing = findIngredientByPath(window.ingredientObjs || [], path);
     if (ing) {
       ing.expanded = !ing.expanded;
       if (typeof safeRenderTable === 'function') safeRenderTable();
@@ -734,14 +735,14 @@ function installUIEvents() {
 // --- Inicialización de eventos y render seguro ---
 function safeRenderTable() {
   // Siempre recalcula y renderiza la sección de ingredientes y totales.
-  recalcAll(window.ingredientObjs, window.globalQty);
+  recalcAll(window.ingredientObjs || [], window.globalQty);
 
   const seccion = document.getElementById('seccion-crafting');
   if (seccion) {
     // Guardar el valor actual del input y el estado de los expandibles
     const qtyInput = document.getElementById('qty-global');
     const currentQty = qtyInput ? qtyInput.value : window.globalQty;
-    const expandedStates = snapshotExpandState(window.ingredientObjs);
+  const expandedStates = snapshotExpandState(window.ingredientObjs || []);
 
     // Renderizar de nuevo toda la sección
     seccion.innerHTML = renderCraftingSectionUI();
@@ -751,7 +752,7 @@ function safeRenderTable() {
     if (newQtyInput) {
       newQtyInput.value = currentQty;
     }
-    restoreExpandState(window.ingredientObjs, expandedStates);
+      restoreExpandState(window.ingredientObjs || [], expandedStates);
   }
 }
   // Re-sincronizar el input de cantidad global
