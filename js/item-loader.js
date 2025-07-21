@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const recipeData = await fetchRecipeData(itemId);
     const marketData = await fetchMarketDataForItem(itemId);
 
+    // Valores globales para comparativas y tablas
+    window._mainBuyPrice = marketData.buy_price || 0;
+    window._mainSellPrice = marketData.sell_price || 0;
+    window._mainRecipeOutputCount = recipeData ? (recipeData.output_item_count || 1) : 1;
+
     let rootIngredient;
 
     if (recipeData) {
