@@ -1,6 +1,6 @@
 import { getLegendaryItem, LEGENDARY_ITEMS, isBasicMaterial } from './data/legendaryItems1gen.js';
 import { createIngredientTree } from './utils/Ingredient1gen.js';
-import { LegendaryCraftingBase } from './legendaryCraftingBase.js';
+import { LegendaryCraftingBase } from './legendary-utils.js';
 
 const quickLoadButtons = {
   btnTwilight: { id: 'btnTwilight', itemId: '30704', itemName: 'Crepúsculo' },

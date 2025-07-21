@@ -1,3 +1,4 @@
+import { fetchItemData, fetchPriceData, isGiftName, shouldSkipMarketCheck } from "./dones-core.js";
 // js/dones.js
 
 // Sección de "Dones Especiales" (ejemplo: Don de la Suerte)
@@ -85,10 +86,6 @@ const donesContent = document.getElementById('dones-content');
 const loader = document.getElementById('loader');
 const errorMsg = document.getElementById('error-message');
 
-// Cachés en memoria y en sessionStorage para ítems y precios
-const itemCache = new Map();
-const priceCache = new Map();
-
 
 // --- Fin de formatGold ---
 
@@ -110,52 +107,6 @@ const EXCLUDED_ITEM_IDS = [
   19645, 19650, 19655, 19639, 19635, 19621 // Diversos "Don de ..." (account bound)
 ];
 
-function isGiftName(name){
-  if(!name) return false;
-  const lower = name.toLowerCase();
-  return lower.startsWith('don de ') || lower.startsWith('don del ') || lower.startsWith('don de la ');
-}
-
-function shouldSkipMarketCheck(id){
-  return EXCLUDED_ITEM_IDS.includes(id);
-}
-
-async function fetchItemData(id) {
-  if (itemCache.has(id)) return itemCache.get(id);
-  const stored = sessionStorage.getItem('item:' + id);
-  if (stored) {
-    const data = JSON.parse(stored);
-    itemCache.set(id, data);
-    return data;
-  }
-  const res = await fetch(API_ITEM + id);
-  if (!res.ok) throw new Error('No se pudo obtener info de item ' + id);
-  const json = await res.json();
-  itemCache.set(id, json);
-  try { sessionStorage.setItem('item:' + id, JSON.stringify(json)); } catch(e) {}
-  return json;
-}
-
-async function fetchPriceData(id) {
-  if (FIXED_PRICE_ITEMS[id] !== undefined) {
-    const value = FIXED_PRICE_ITEMS[id];
-    return {buys:{unit_price:value}, sells:{unit_price:value}};
-  }
-  if(shouldSkipMarketCheck(id)) return null;
-  if (priceCache.has(id)) return priceCache.get(id);
-  const stored = sessionStorage.getItem('price:' + id);
-  if (stored) {
-    const data = JSON.parse(stored);
-    priceCache.set(id, data);
-    return data;
-  }
-  const res = await fetch(API_PRICES + id);
-  if (!res.ok) return null;
-  const json = await res.json();
-  priceCache.set(id, json);
-  try { sessionStorage.setItem('price:' + id, JSON.stringify(json)); } catch(e) {}
-  return json;
-}
 
 async function renderDon(don, container) {
   // Si no se pasa un contenedor, se usa el global por defecto (comportamiento antiguo)

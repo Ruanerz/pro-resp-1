@@ -1,6 +1,6 @@
 import { getLegendary3GenItem, LEGENDARY_ITEMS_3GEN, isBasic3GenMaterial } from './data/legendaryItems3gen.js';
 import { createIngredientTree } from './utils/Ingredient3gen.js';
-import { LegendaryCraftingBase } from './legendaryCraftingBase.js';
+import { LegendaryCraftingBase } from './legendary-utils.js';
 
 const quickLoadButtons = {
   btnDesgarro: { id: 'btnDesgarro', itemId: '96937', itemName: 'Desgarro de Aurene' },
