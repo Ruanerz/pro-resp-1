@@ -178,7 +178,18 @@
     });
   </script>
   <script type="module">
-    import { renderGraficoContribuciones, renderGraficoAbrirVsVender, renderTablaPrecios, renderTablaPromedios, renderTablaResumenOro, renderTablaResumenOroIndividual, renderTablaReferenciasProfit, renderExtras, fetchItemPrices, fetchIconsFor, ICON_ID_MAP } from './js/fractales-gold-ui.js';
+    import {
+      renderGraficoContribuciones,
+      renderGraficoAbrirVsVender,
+      renderTablaPrecios,
+      renderTablaPromedios,
+      renderTablaResumenOro,
+      renderTablaResumenOroIndividual,
+      renderTablaReferenciasProfit,
+      renderExtras,
+      ICON_ID_MAP
+    } from './js/fractales-gold-ui.js';
+    import { fetchItemPrices, fetchIconsFor } from './js/fractales-utils.js';
 
     async function fetchPreciosFractales() {
       const priceMap = await fetchItemPrices([75919, 73248]);
