@@ -323,6 +323,8 @@ function updateQtyInputVisibility(show) {
 
 // --- Renderizado de la sección 7: Ingredientes para craftear ---
 function renderCraftingSectionUI(buyPrice = window._mainBuyPrice, sellPrice = window._mainSellPrice) {
+  if (buyPrice == null || isNaN(buyPrice)) buyPrice = window._mainBuyPrice;
+  if (sellPrice == null || isNaN(sellPrice)) sellPrice = window._mainSellPrice;
   if (typeof window._mainItemExpanded === 'undefined') window._mainItemExpanded = false;
   
   // Mostrar/ocultar el input de cantidad global según si hay ingredientes
@@ -648,6 +650,8 @@ export async function initItemUI(itemData, marketData) {
 export { renderItemUI, safeRenderTable };
 
 function safeRenderTable(buyPrice = window._mainBuyPrice, sellPrice = window._mainSellPrice) {
+  if (buyPrice == null || isNaN(buyPrice)) buyPrice = window._mainBuyPrice;
+  if (sellPrice == null || isNaN(sellPrice)) sellPrice = window._mainSellPrice;
   // Siempre recalcula y renderiza la sección de ingredientes y totales
   recalcAll(window.ingredientObjs, window.globalQty);
   const seccion = document.getElementById('seccion-crafting');
