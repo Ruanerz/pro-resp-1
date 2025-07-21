@@ -159,7 +159,7 @@ function renderMainItemRow(mainNode, nivel = 0) {
             <div class="item-solo-precio">${formatGoldColored(sellPriceUnit)} <span style="color: #c99b5b">c/u</span></div>
         </td>
         <td class="item-solo-craft">
-            <div>${formatGoldColored(totals.totalCrafted)}</div>
+            <div>${formatGoldColored(0)}</div>
         </td>
         <td></td>
     </tr>
