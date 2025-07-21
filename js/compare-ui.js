@@ -657,6 +657,15 @@ function safeRenderTable() {
   // Re-sincronizar el input de cantidad global
   setQtyInputValue(window.globalQty);
 }
+
+if (typeof window !== 'undefined') {
+  window.showLoader = showLoader;
+  window.showError = showError;
+  window.hideError = hideError;
+  window.safeRenderTable = safeRenderTable;
+  window.renderItemUI = renderItemUI;
+  window.installUIEvents = installUIEvents;
+}
   // Aquí debe ir la lógica para re-renderizar la tabla de ingredientes y restaurar estados visuales
   // (Implementar usando los helpers y renderRows, etc. según se necesite)
 
