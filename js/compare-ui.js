@@ -393,7 +393,7 @@ function renderCraftingSectionUI(buyPrice = window._mainBuyPrice, sellPrice = wi
           <th><div class="tooltip-modern">Total Crafted
             <span class="tooltiptext-modern">Suma total si CRAFTEAS todos los materiales posibles desde cero.</span>
           </div></th>
-          <td class="item-solo-crafted">${formatGoldColored(0)}</td>
+          <td class="item-solo-crafted">${formatGoldColored(totals.totalCrafted)}</td>
         </tr>
       </table>
     </div>
@@ -416,7 +416,7 @@ function renderCraftingSectionUI(buyPrice = window._mainBuyPrice, sellPrice = wi
             <th><div class="tooltip-modern">Total Crafted
               <span class="tooltiptext-modern">Suma total si CRAFTEAS todos los materiales posibles desde cero.</span>
             </div></th>
-            <td class="item-solo-crafted">${formatGoldColored(0)}</td>
+              <td class="item-solo-crafted">${formatGoldColored(totals.totalCrafted / outputCount)}</td>
           </tr>
         </table>
       </div>
