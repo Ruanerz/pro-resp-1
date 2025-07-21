@@ -252,6 +252,8 @@ function renderRows(ings, nivel = 0, parentId = null, rowGroupIndex = 0, parentE
         return `<span style='font-weight:bold;color:${color}'>${formatGoldColored(profit)}</span>`;
     })();
 
+    const noMarketPrice = (!ing.buy_price && !ing.sell_price);
+
     return `
       <tr data-path="${currentPath}" class="${isChild ? `subrow subrow-${nivel} child-of-${parentId}` : ''} ${rowBgClass}" ${extraStyle}>
         <td class="th-border-left-items" ${indent}><img src="${ing.icon}" width="32"></td>
@@ -274,7 +276,7 @@ function renderRows(ings, nivel = 0, parentId = null, rowGroupIndex = 0, parentE
         <td class="item-solo-crafted">
           ${(ing.is_craftable && ing.children && ing.children.length > 0 && ing.total_crafted !== null) ? `
             <div>${formatGoldColored(ing.total_crafted)}</div>
-            <div class="item-solo-precio">${formatGoldColored(ing.crafted_price || 0)} <span style="color: #c99b5b">c/u</span></div>
+            <div class="item-solo-precio">${formatGoldColored(noMarketPrice ? 0 : (ing.crafted_price || 0))} <span style="color: #c99b5b">c/u</span></div>
             ${radiosCrafted}` : ''
           }
         </td>
