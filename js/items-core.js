@@ -418,7 +418,7 @@ window.comparativa.agregarItemPorId = async function(id) {
       });
     }
     window.ingredientObjs.push(ingredientesArbol);
-    if (typeof window.safeRenderTable === 'function') window.safeRenderTable();
+    if (typeof window.safeRenderTable === 'function') window.safeRenderTable(marketData.buy_price, marketData.sell_price);
     if (typeof window.showLoader === 'function') window.showLoader(false);
   } catch (e) {
     if (typeof window.showLoader === 'function') window.showLoader(false);

@@ -322,7 +322,7 @@ function updateQtyInputVisibility(show) {
 }
 
 // --- Renderizado de la sección 7: Ingredientes para craftear ---
-function renderCraftingSectionUI() {
+function renderCraftingSectionUI(buyPrice = window._mainBuyPrice, sellPrice = window._mainSellPrice) {
   if (typeof window._mainItemExpanded === 'undefined') window._mainItemExpanded = false;
   
   // Mostrar/ocultar el input de cantidad global según si hay ingredientes
@@ -334,7 +334,7 @@ function renderCraftingSectionUI() {
   const outputCount = (window._mainRecipeOutputCount && !isNaN(window._mainRecipeOutputCount)) ? window._mainRecipeOutputCount : 1;
   const totals = getTotals(window.ingredientObjs);
   const qtyValue = (typeof getQtyInputValue() !== 'undefined' ? getQtyInputValue() : window.globalQty);
-  const precioCompraTotal = (window._mainBuyPrice != null) ? window._mainBuyPrice * window.globalQty : 0;
+  const precioCompraTotal = (buyPrice != null) ? buyPrice * window.globalQty : 0;
   // Suma el sell_price de todos los ítems raíz
   const totalSellPrice = window.ingredientObjs.reduce((sum, ing) => sum + (Number(ing.sell_price) || 0), 0);
   const precioVentaTotal = totalSellPrice * window.globalQty;
@@ -361,7 +361,7 @@ function renderCraftingSectionUI() {
   const profitSellTotal = ventaTrasComisionTotal - totals.totalSell;
   const profitCraftedTotal = ventaTrasComisionTotal - totals.totalCrafted;
   // Variables para profit por unidad (outputCount > 1)
-  const precioVentaUnidadMercado = (window._mainSellPrice != null) ? window._mainSellPrice : 0;
+  const precioVentaUnidadMercado = (sellPrice != null) ? sellPrice : 0;
   const ventaTrasComisionUnidadMercado = precioVentaUnidadMercado - (precioVentaUnidadMercado * 0.15);
   const profitBuyUnidadMercado = ventaTrasComisionUnidadMercado - (totals.totalBuy / outputCount);
   const profitSellUnidadMercado = ventaTrasComisionUnidadMercado - (totals.totalSell / outputCount);
@@ -439,8 +439,8 @@ function renderCraftingSectionUI() {
       </section>`;
   }
   if (outputCount > 1) {
-    const precioCompraUnidadMercado = (window._mainBuyPrice != null) ? window._mainBuyPrice : 0;
-    const precioVentaUnidadMercado = (window._mainSellPrice != null) ? window._mainSellPrice : 0;
+    const precioCompraUnidadMercado = (buyPrice != null) ? buyPrice : 0;
+    const precioVentaUnidadMercado = (sellPrice != null) ? sellPrice : 0;
     const precioCraftingMinUnidadReal = outputCount > 0 ? precioCraftingMinTotal / outputCount : precioCraftingMinTotal;
     const preciosUnidadCorr = [precioCompraUnidadMercado, precioVentaUnidadMercado, precioCraftingMinUnidadReal];
     const precioMinimoUnidadReal = Math.min(...preciosUnidadCorr.filter(x => x > 0));
@@ -541,7 +541,7 @@ const precios = `
   restoreExpandState(window.ingredientObjs, expandSnapshot);
 
   // Crafting
-  document.getElementById('seccion-crafting').innerHTML = renderCraftingSectionUI();
+  document.getElementById('seccion-crafting').innerHTML = renderCraftingSectionUI(marketData?.buy_price, marketData?.sell_price);
 
   installUIEvents();
 }
@@ -647,12 +647,12 @@ export async function initItemUI(itemData, marketData) {
 
 export { renderItemUI, safeRenderTable };
 
-function safeRenderTable() {
+function safeRenderTable(buyPrice = window._mainBuyPrice, sellPrice = window._mainSellPrice) {
   // Siempre recalcula y renderiza la sección de ingredientes y totales
   recalcAll(window.ingredientObjs, window.globalQty);
   const seccion = document.getElementById('seccion-crafting');
   if (seccion) {
-    seccion.innerHTML = renderCraftingSectionUI();
+    seccion.innerHTML = renderCraftingSectionUI(buyPrice, sellPrice);
   }
   // Re-sincronizar el input de cantidad global
   setQtyInputValue(window.globalQty);
