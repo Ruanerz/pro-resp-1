@@ -1,6 +1,11 @@
 // Common item functions used across item and compare views
 // Copied from original item.js for reuse
 
+if (typeof window !== 'undefined') {
+  window.ingredientObjs = window.ingredientObjs || [];
+  window.globalQty = window.globalQty || 1;
+}
+
 export function setIngredientObjs(val) {
   window.ingredientObjs = val;
 }
@@ -363,6 +368,8 @@ if (typeof window.comparativa === 'undefined') {
 }
 
 window.comparativa.agregarItemPorId = async function(id) {
+  window.ingredientObjs = window.ingredientObjs || [];
+  window.globalQty = window.globalQty || 1;
   if (window.ingredientObjs.some(obj => obj.id == id)) return;
   try {
     if (typeof window.showLoader === 'function') window.showLoader(true);
