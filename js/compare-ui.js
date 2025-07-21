@@ -191,7 +191,7 @@ function renderMainItemRow(mainItem, qty, totalBuy, totalSell, totalCrafted) {
       <td class="item-unit-sell">${formatGoldColored(Number(mainItem.sell_price))} <span style="color: #c99b5b">c/u</span></td>
       <td class="item-solo-buy"><div>${formatGoldColored(realTotals.totalBuy)}</div></td>
       <td class="item-solo-sell"><div>${formatGoldColored(realTotals.totalSell)}</div></td>
-      <td class="item-solo-crafted"><div>${formatGoldColored(realTotals.totalCrafted)}</div></td>
+      <td class="item-solo-crafted"><div>${formatGoldColored(0)}</div></td>
       <td class="item-profit">${(() => {
         const ventaBruta = Number(mainItem.sell_price) * qty;
         const ventaNeta = ventaBruta - (ventaBruta * 0.15);
@@ -273,7 +273,7 @@ function renderRows(ings, nivel = 0, parentId = null, rowGroupIndex = 0, parentE
         
         <td class="item-solo-crafted">
           ${(ing.is_craftable && ing.children && ing.children.length > 0 && ing.total_crafted !== null) ? `
-            <div>${formatGoldColored(ing.total_crafted)}</div>
+            <div>${formatGoldColored(0)}</div>
             <div class="item-solo-precio">${formatGoldColored(0)} <span style="color: #c99b5b">c/u</span></div>
             ${radiosCrafted}` : ''
           }
