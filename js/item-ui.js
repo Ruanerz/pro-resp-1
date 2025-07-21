@@ -335,7 +335,7 @@ const precioVentaTotal = mainNode && typeof mainNode.sell_price === 'number' ? m
           <th><div class="tooltip-modern">Total Crafteo
             <span class="tooltiptext-modern">Suma total si CRAFTEAS todos los materiales posibles desde cero.</span>
           </div></th>
-          <td class="item-solo-crafted">${formatGoldColored(0)}</td>
+          <td class="item-solo-crafted">${formatGoldColored(totals.totalCrafted)}</td>
         </tr>
       </table>
     </div>
@@ -364,7 +364,7 @@ const precioVentaTotal = mainNode && typeof mainNode.sell_price === 'number' ? m
             <th><div class="tooltip-modern">Total Crafteo
               <span class="tooltiptext-modern">Suma total si CRAFTEAS todos los materiales posibles desde cero.</span>
             </div></th>
-            <td class="item-solo-crafted">${formatGoldColored(0)}</td>
+            <td class="item-solo-crafted">${formatGoldColored(totals.totalCrafted / outputCount)}</td>
           </tr>
         </table>
       </div>
