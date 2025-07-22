@@ -3400,4 +3400,13 @@ window.appThirdGen = new LegendaryCraftingBase({
 // Expose legendary items data globally for other modules
 window.LEGENDARY_ITEMS = LEGENDARY_ITEMS;
 window.LEGENDARY_ITEMS_3GEN = LEGENDARY_ITEMS_3GEN;
-window.LegendaryData = { LEGENDARY_ITEMS, LEGENDARY_ITEMS_3GEN };
+/**
+ * Global container with all legendary item datasets. Other modules should
+ * reference this object instead of importing the constants directly.
+ */
+window.LegendaryData = {
+  LEGENDARY_ITEMS,
+  LEGENDARY_ITEMS_3GEN,
+  BASIC_MATERIALS,
+  BASIC_MATERIALS_3GEN
+};
