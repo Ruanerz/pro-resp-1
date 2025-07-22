@@ -201,7 +201,7 @@ async function renderDon(don, container) {
 
 // === Dones de armas legendarias Gen 1 ===
 async function extractWeaponGifts() {
-  const { LEGENDARY_ITEMS } = await import('./data/legendaryItems1gen.js');
+  const { LEGENDARY_ITEMS } = window.LegendaryData || {};
   const gifts = [];
   const seen = new Set();
   for (const item of Object.values(LEGENDARY_ITEMS)) {
@@ -301,10 +301,9 @@ async function renderSpecialDons() {
   loader.style.display = 'none';
 }
 
-// === Tributo Dracónico (dinámico desde legendaryItems3gen) ===
+// === Tributo Dracónico ===
 async function getDraconicTribute() {
-  // Carga perezosa para evitar coste inicial si el usuario no abre la pestaña
-  const { LEGENDARY_ITEMS_3GEN } = await import('./data/legendaryItems3gen.js');
+  const { LEGENDARY_ITEMS_3GEN } = window.LegendaryData || {};
   for (const weapon of Object.values(LEGENDARY_ITEMS_3GEN)) {
     const tribute = weapon.components?.find(c => {
       const nm = c.name?.toLowerCase() || '';
