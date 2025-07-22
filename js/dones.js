@@ -1,4 +1,4 @@
-import { fetchItemData, fetchPriceData, isGiftName, shouldSkipMarketCheck } from "./dones-core.js";
+const { fetchItemData, fetchPriceData, isGiftName, shouldSkipMarketCheck } = window.DonesCore || {};
 // js/dones.js
 
 // Sección de "Dones Especiales" (ejemplo: Don de la Suerte)

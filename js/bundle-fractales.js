@@ -1,22 +1,194 @@
+// Bundled fractales scripts
+// Utilidades compartidas para fractales y forja mística
+const iconCache = {};
+const rarityCache = {};
+
+async function fetchIconsFor(ids = []) {
+  if (!ids.length) return;
+  try {
+    const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${ids.join(',')}&lang=es`);
+    const data = await res.json();
+    data.forEach(item => {
+      if (item && item.id) {
+        iconCache[item.id] = item.icon;
+        rarityCache[item.id] = item.rarity;
+      }
+    });
+  } catch {}
+}
+
+async function fetchItemPrices(ids = []) {
+  if (!ids || ids.length === 0) return {};
+  const url = `https://api.datawars2.ie/gw2/v1/items/csv?fields=id,buy_price,sell_price&ids=${ids.join(',')}`;
+  try {
+    const csv = await fetch(url).then(r => r.text());
+    const [header, ...rows] = csv.trim().split('\n');
+    const headers = header.split(',');
+    const idIdx = headers.indexOf('id');
+    const buyIdx = headers.indexOf('buy_price');
+    const sellIdx = headers.indexOf('sell_price');
+    const result = {};
+    rows.forEach(row => {
+      const cols = row.split(',');
+      const id = parseInt(cols[idIdx], 10);
+      if (!isNaN(id)) {
+        result[id] = {
+          buy_price: parseInt(cols[buyIdx], 10) || 0,
+          sell_price: parseInt(cols[sellIdx], 10) || 0
+        };
+      }
+    });
+    return result;
+  } catch (e) {
+    return {};
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.FractalesUtils = { fetchIconsFor, fetchItemPrices, iconCache, rarityCache };
+}
+// --- Lógica de Fractales Gold ---
+// IDs de ítems relevantes para fractales (basado en los nombres de la tabla de promedios)
+// Puedes agregar/quitar ítems aquí según tus necesidades
+// Ingredientes comerciables válidos para fractales, cotejados con dones.js
+// Lista exacta y en orden según indicación del usuario
+const FRACTALES_ITEMS = [
+  { key: 'hueso', id: 24341, nombre: 'Hueso grande' },
+  { key: 'veneno', id: 24282, nombre: 'Vesícula de veneno potente' },
+  { key: 'polvo', id: 24276, nombre: 'Montón de polvo incandescente' },
+  { key: 'totem', id: 24299, nombre: 'Tótem intrincado' },
+  { key: 'garra', id: 24350, nombre: 'Garra grande' },
+  { key: 'colmillo', id: 24356, nombre: 'Colmillo grande' },
+  { key: 'sangre', id: 24294, nombre: 'Vial de sangre potente' },
+  { key: 'escama', id: 24288, nombre: 'Escama grande' },
+  { key: 'infusion_mas1', id: 49424, nombre: 'Infusión +1' }
+];
+
+// Datos de stacks de fractales obtenidos de registros históricos
+// Se utilizan para calcular promedios de materiales y oro
+const FRACTAL_STACKS = [
+  {
+    stacks: 55,
+    data: {
+      oro_de_basura: 59510000,
+      garra: 4625.45,
+      totem: 4360.23,
+      sangre: 5005.12,
+      veneno: 4610.56,
+      hueso: 4685.78,
+      escama: 4750.98,
+      colmillo: 4845.01,
+      polvo: 4855.34,
+      infusion_mas1: 31039.56,
+      llaves_encriptacion: 1426.12,
+      empíreos: 8445.67
+    }
+  },
+  {
+    stacks: 17,
+    data: {
+      oro_de_basura: 18068500,
+      garra: 1340.23,
+      totem: 1640.45,
+      sangre: 1385.12,
+      veneno: 1475.56,
+      hueso: 1380.78,
+      escama: 1585.98,
+      colmillo: 1295.01,
+      polvo: 1540.34,
+      infusion_mas1: 9799.56,
+      llaves_encriptacion: 427.12,
+      empíreos: 4125.67
+    }
+  },
+  {
+    stacks: 32,
+    data: {
+      oro_de_basura: 34443500,
+      recetas_ascendentes: 65.23,
+      infusion_mas1: 18256.56,
+      llaves_encriptacion: 783.12,
+      hueso: 2685.78,
+      veneno: 2775.98,
+      polvo: 2665.34,
+      totem: 2815.01,
+      garra: 2730.45,
+      colmillo: 2685.12,
+      sangre: 2545.56,
+      escama: 2645.98,
+      hematites: 8090.12,
+      empíreos: 7645.67,
+      dragonita: 7645.67,
+      sacos_reliquias: 538.12,
+      saco_equipamiento: 4.01,
+      miniatura: 154
+    }
+  },
+  {
+    stacks: 4000,
+    data: {
+      oro_de_basura: 4283407500,
+      recetas_ascendentes: 7555,
+      infusion_mas1: 2263678,
+      llaves_encriptacion: 99812,
+      hueso: 334960,
+      veneno: 337195,
+      polvo: 337825,
+      totem: 338230,
+      garra: 339190,
+      colmillo: 336540,
+      sangre: 339475,
+      escama: 339260,
+      hematites: 1013835,
+      empíreos: 1012619,
+      dragonita: 1006125,
+      sacos_reliquias: 66795,
+      saco_equipamiento: 171,
+      miniatura: 19787
+    }
+  }
+];
+// Ítems no comerciables o no relevantes para fractales (comentados)
+// { key: 'infusion_mas1', id: 49424, nombre: 'Infusión +1' },
+// { key: 'empíreos', id: 46735, nombre: 'Fragmento empíreo' },
+// { key: 'dragonita', id: 46733, nombre: 'Mineral de dragonita' },
+// { key: 'hematites', id: 46731, nombre: 'Montón de polvo de hematites' },
+// { key: 'llaves_encriptacion', id: 70438, nombre: 'Clave de encriptación fractal' },
+// { key: 'oro_de_basura', id: 0, nombre: 'Oro crudo' },
+// { key: 'recetas_asce', id: 0, nombre: 'Recetas ascendidas' },
+// { key: 'sacos_reliquias', id: 79792, nombre: 'Puñado de reliquias fractales' },
+// { key: 'saco_equipamiento', id: 71510, nombre: 'Saco de equipo excepcional' },
+// { key: 'miniatura', id: 74268, nombre: 'Miniatura del profesor Miau' }
+
+
+// Utilidad para obtener solo los ítems con ID válido de mercado
+function getItemsConMercado() {
+  return FRACTALES_ITEMS.filter(item => item.id && item.id > 0);
+}
+
+// Utilidad para mapear key a nombre
+function keyToNombre(key) {
+  const item = FRACTALES_ITEMS.find(i => i.key === key);
+  return item ? item.nombre : key;
+}
+if (typeof window !== 'undefined') { window.FractalesLogic = { FRACTALES_ITEMS, FRACTAL_STACKS, getItemsConMercado, keyToNombre }; }
 // --- UI dinámico para fractales-gold.html ---
 // Variables globales para precios de fractales (se deben actualizar con fetch/cálculo real)
-export let valorCompra75919 = 0;
-export let valorVenta75919 = 0;
-export let valorCompra73248 = 0;
-export let valorVenta73248 = 0;
+let valorCompra75919 = 0;
+let valorVenta75919 = 0;
+let valorCompra73248 = 0;
+let valorVenta73248 = 0;
 
-export function setValoresFractales({ compra75919, venta75919, compra73248, venta73248 }) {
+function setValoresFractales({ compra75919, venta75919, compra73248, venta73248 }) {
   valorCompra75919 = compra75919;
   valorVenta75919 = venta75919;
   valorCompra73248 = compra73248;
   valorVenta73248 = venta73248;
 }
-import { FRACTALES_ITEMS, FRACTAL_STACKS, getItemsConMercado, keyToNombre } from './fractales-gold-logic.js';
 
 // Cache para iconos y rarezas
-import { fetchIconsFor, fetchItemPrices, iconCache, rarityCache } from './fractales-utils.js';
 // Mapeo simple de key a ID para obtener iconos
-export const ICON_ID_MAP = {
+const ICON_ID_MAP = {
   garra: 24350,
   totem: 24299,
   sangre: 24294,
@@ -53,7 +225,7 @@ let abrirVenderChart = null;
 // --- Helper para obtener precios de múltiples ítems en una sola llamada ---
 
 // --- Renderiza la tabla de promedios por stack ---
-export async function renderTablaPromedios(containerId = 'tabla-promedios') {
+async function renderTablaPromedios(containerId = 'tabla-promedios') {
   try {
     const sets = FRACTAL_STACKS;
     const claves = [
@@ -125,7 +297,7 @@ export async function renderTablaPromedios(containerId = 'tabla-promedios') {
 }
 
 // --- Renderiza la tabla de precios unitarios de materiales ---
-export async function renderTablaPrecios(containerId = 'tabla-precios-fractales') {
+async function renderTablaPrecios(containerId = 'tabla-precios-fractales') {
   try {
     const items = getItemsConMercado();
     let itemsMostrar = [...items];
@@ -199,7 +371,7 @@ export async function renderTablaPrecios(containerId = 'tabla-precios-fractales'
 }
 
 // --- Renderiza la tabla resumen de oro crudo + materiales × 0.85 ---
-export async function renderTablaResumenOro(containerId = 'tabla-resumen-oro', preciosFractales = {}) {
+async function renderTablaResumenOro(containerId = 'tabla-resumen-oro', preciosFractales = {}) {
   try {
     // 1. Promedio de oro crudo
     const sets = FRACTAL_STACKS;
@@ -304,7 +476,7 @@ export async function renderTablaResumenOro(containerId = 'tabla-resumen-oro', p
 }
 
 // --- Renderiza la tabla resumen POR ENCRIPTACIÓN (divide valores finales entre 250) ---
-export async function renderTablaResumenOroIndividual(containerId = 'tabla-resumen-oro-individual', preciosFractales = {}) {
+async function renderTablaResumenOroIndividual(containerId = 'tabla-resumen-oro-individual', preciosFractales = {}) {
   try {
     // Reutilizamos la lógica de renderTablaResumenOro pero dividimos el resultado final entre 250
     const resumen = await renderTablaResumenOro(undefined, preciosFractales);
@@ -343,7 +515,7 @@ export async function renderTablaResumenOroIndividual(containerId = 'tabla-resum
 }
 
 
-export function renderTablaReferenciasProfit(containerId = 'tabla-referencias-profit', preciosFractales = {}, resumen = {}) {
+function renderTablaReferenciasProfit(containerId = 'tabla-referencias-profit', preciosFractales = {}, resumen = {}) {
   const {
     compra75919 = 0,
     venta75919 = 0,
@@ -400,7 +572,7 @@ export function renderTablaReferenciasProfit(containerId = 'tabla-referencias-pr
   document.getElementById(containerId).innerHTML = htmlFractales;
 }
 
-export function renderGraficoContribuciones(contribuciones = [], containerId = 'contribuciones-chart') {
+function renderGraficoContribuciones(contribuciones = [], containerId = 'contribuciones-chart') {
   const ctx = document.getElementById(containerId)?.getContext('2d');
   if (!ctx) return;
   if (contribucionesChart) contribucionesChart.destroy();
@@ -424,7 +596,7 @@ export function renderGraficoContribuciones(contribuciones = [], containerId = '
   });
 }
 
-export function renderGraficoAbrirVsVender(containerId = 'abrir-vs-vender-chart', preciosFractales = {}, resumen = {}) {
+function renderGraficoAbrirVsVender(containerId = 'abrir-vs-vender-chart', preciosFractales = {}, resumen = {}) {
   const ctx = document.getElementById(containerId)?.getContext('2d');
   if (!ctx) return;
   if (abrirVenderChart) abrirVenderChart.destroy();
@@ -477,7 +649,7 @@ export function renderGraficoAbrirVsVender(containerId = 'abrir-vs-vender-chart'
   });
 }
 
-export function renderExtras(preciosFractales = {}, claveStack = 24.96) {
+function renderExtras(preciosFractales = {}, claveStack = 24.96) {
   const { venta73248 = 0 } = preciosFractales;
   const precioMatrizEl = document.getElementById('matriz-precio');
   const conversionEl = document.getElementById('conversion-indirecta');
@@ -489,3 +661,4 @@ export function renderExtras(preciosFractales = {}, claveStack = 24.96) {
     conversionEl.innerHTML = window.formatGoldColored(total);
   }
 }
+if (typeof window !== 'undefined') { window.FractalesGoldUI = { setValoresFractales, ICON_ID_MAP, renderTablaPromedios, renderTablaPrecios, renderTablaResumenOro, renderTablaResumenOroIndividual, renderTablaReferenciasProfit, renderGraficoContribuciones, renderGraficoAbrirVsVender, renderExtras }; }

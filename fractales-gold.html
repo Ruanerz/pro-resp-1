@@ -163,6 +163,7 @@
     </main>
   </div>
   <script src="js/bundle-utils-1.js"></script>
+  <script src="js/bundle-fractales.js"></script>
   <script>
     // Tabs visuales como en item.html
     document.addEventListener('DOMContentLoaded', function() {
@@ -177,8 +178,8 @@
       });
     });
   </script>
-  <script type="module">
-    import {
+  <script>
+    const {
       renderGraficoContribuciones,
       renderGraficoAbrirVsVender,
       renderTablaPrecios,
@@ -188,8 +189,8 @@
       renderTablaReferenciasProfit,
       renderExtras,
       ICON_ID_MAP
-    } from './js/fractales-gold-ui.js';
-    import { fetchItemPrices, fetchIconsFor } from './js/fractales-utils.js';
+    } = window.FractalesGoldUI;
+    const { fetchItemPrices, fetchIconsFor } = window.FractalesUtils;
 
     async function fetchPreciosFractales() {
       const priceMap = await fetchItemPrices([75919, 73248]);

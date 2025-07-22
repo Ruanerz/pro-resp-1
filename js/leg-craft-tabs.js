@@ -1,22 +1,5 @@
 // js/leg-craft-tabs.js
-// Handles tab switching and lazy loading of legendary crafting modules
-
-const loaded = {
-  first: false,
-  third: false
-};
-
-async function loadFirstGen() {
-  if (loaded.first) return;
-  loaded.first = true;
-  await import('./legendaryCrafting1gen.js');
-}
-
-async function loadThirdGen() {
-  if (loaded.third) return;
-  loaded.third = true;
-  await import('./legendaryCrafting3gen.js');
-}
+// Handles tab switching for legendary crafting
 
 function switchTab(tabId) {
   document.querySelectorAll('.container-first, .container-third').forEach(tab => {
@@ -28,9 +11,6 @@ function switchTab(tabId) {
   const button = document.querySelector(`.item-tab-btn[data-tab="${tabId}"]`);
   if (target) target.style.display = 'block';
   if (button) button.classList.add('active');
-
-  if (tabId === 'tab-first-gen') loadFirstGen();
-  else if (tabId === 'tab-third-gen') loadThirdGen();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -42,10 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Load script for the tab that is active on initial page load
   const defaultBtn = document.querySelector('.item-tab-btn.active');
   if (defaultBtn) {
-    const tabId = defaultBtn.getAttribute('data-tab');
-    switchTab(tabId);
+    switchTab(defaultBtn.getAttribute('data-tab'));
   }
 });
