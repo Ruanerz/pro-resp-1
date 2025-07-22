@@ -179,21 +179,12 @@
     });
   </script>
   <script>
-    const {
-      renderGraficoContribuciones,
-      renderGraficoAbrirVsVender,
-      renderTablaPrecios,
-      renderTablaPromedios,
-      renderTablaResumenOro,
-      renderTablaResumenOroIndividual,
-      renderTablaReferenciasProfit,
-      renderExtras,
-      ICON_ID_MAP
-    } = window.FractalesGoldUI;
-    const { fetchItemPrices, fetchIconsFor } = window.FractalesUtils;
+    // Usar las utilidades expuestas en window para evitar duplicar identificadores
+    const ui = window.FractalesGoldUI;
+    const utils = window.FractalesUtils;
 
     async function fetchPreciosFractales() {
-      const priceMap = await fetchItemPrices([75919, 73248]);
+      const priceMap = await utils.fetchItemPrices([75919, 73248]);
       return {
         compra75919: priceMap[75919]?.buy_price || 0,
         venta75919: priceMap[75919]?.sell_price || 0,
@@ -205,15 +196,15 @@
 
     async function renderTodo() {
       const preciosFractales = await fetchPreciosFractales();
-      await fetchIconsFor(Object.values(ICON_ID_MAP));
-      await renderTablaPromedios();
-      await renderTablaPrecios();
-      const resumenData = await renderTablaResumenOro('tabla-resumen-oro', preciosFractales);
-      await renderTablaResumenOroIndividual('tabla-resumen-oro-individual', preciosFractales);
-      renderGraficoContribuciones(resumenData.contribuciones);
-      renderTablaReferenciasProfit('tabla-referencias-profit', preciosFractales, resumenData);
-      renderGraficoAbrirVsVender('abrir-vs-vender-chart', preciosFractales, resumenData);
-      renderExtras(preciosFractales, 24.96);
+      await utils.fetchIconsFor(Object.values(ui.ICON_ID_MAP));
+      await ui.renderTablaPromedios();
+      await ui.renderTablaPrecios();
+      const resumenData = await ui.renderTablaResumenOro('tabla-resumen-oro', preciosFractales);
+      await ui.renderTablaResumenOroIndividual('tabla-resumen-oro-individual', preciosFractales);
+      ui.renderGraficoContribuciones(resumenData.contribuciones);
+      ui.renderTablaReferenciasProfit('tabla-referencias-profit', preciosFractales, resumenData);
+      ui.renderGraficoAbrirVsVender('abrir-vs-vender-chart', preciosFractales, resumenData);
+      ui.renderExtras(preciosFractales, 24.96);
     }
 
     renderTodo();
