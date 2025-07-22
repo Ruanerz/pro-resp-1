@@ -3341,10 +3341,10 @@ const customPriceTexts1 = [
 window.appFirstGen = new LegendaryCraftingBase({
   getItemById: id => getLegendaryItem(parseInt(id)),
   items: Object.values(LEGENDARY_ITEMS),
-  createIngredientTree1,
+  createIngredientTree: createIngredientTree1,
   isBasicMaterial,
-  quickLoadButtons1,
-  customPriceTexts1,
+  quickLoadButtons: quickLoadButtons1,
+  customPriceTexts: customPriceTexts1,
   elementIds: {
     craftingTree: 'craftingTree',
     summary: 'summary',
@@ -3382,10 +3382,10 @@ const customPriceTexts3 = [
 window.appThirdGen = new LegendaryCraftingBase({
   getItemById: id => getLegendary3GenItem(parseInt(id)),
   items: Object.values(LEGENDARY_ITEMS_3GEN),
-  createIngredientTree3,
+  createIngredientTree: createIngredientTree3,
   isBasicMaterial: isBasic3GenMaterial,
-  quickLoadButtons3,
-  customPriceTexts3,
+  quickLoadButtons: quickLoadButtons3,
+  customPriceTexts: customPriceTexts3,
   elementIds: {
     craftingTree: 'craftingTreeThird',
     summary: 'summaryThird',
