@@ -3396,3 +3396,7 @@ window.appThirdGen = new LegendaryCraftingBase({
     itemNameInput: 'itemNameThird'
   }
 });
+
+// Expose legendary items data globally for other modules
+window.LEGENDARY_ITEMS = LEGENDARY_ITEMS;
+window.LEGENDARY_ITEMS_3GEN = LEGENDARY_ITEMS_3GEN;
