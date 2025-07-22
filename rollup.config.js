@@ -2,7 +2,7 @@ import multiInput from 'rollup-plugin-multi-input';
 import { terser } from '@rollup/plugin-terser';
 
 export default {
-  input: 'js/*.js',
+  input: 'src/js/*.js',
   plugins: [
     multiInput(),
     terser()
