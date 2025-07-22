@@ -1,4 +1,5 @@
 // Bundled dones core and tabs
+(function(){
 const API_ITEM = 'https://api.guildwars2.com/v2/items/';
 const API_PRICES = 'https://api.guildwars2.com/v2/commerce/prices/';
 const itemCache = new Map();
@@ -11,17 +12,17 @@ const EXCLUDED_ITEM_IDS = [
   19645, 19650, 19655, 19639, 19635, 19621
 ];
 
-function isGiftName(name){
+const isGiftName = function(name){
   if(!name) return false;
   const lower = name.toLowerCase();
   return lower.startsWith('don de ') || lower.startsWith('don del ') || lower.startsWith('don de la ');
-}
+};
 
-function shouldSkipMarketCheck(id){
+const shouldSkipMarketCheck = function(id){
   return EXCLUDED_ITEM_IDS.includes(id);
-}
+};
 
-async function fetchItemData(id) {
+const fetchItemData = async function(id) {
   if (itemCache.has(id)) return itemCache.get(id);
   const stored = sessionStorage.getItem('item:' + id);
   if (stored) {
@@ -35,9 +36,9 @@ async function fetchItemData(id) {
   itemCache.set(id, json);
   try { sessionStorage.setItem('item:' + id, JSON.stringify(json)); } catch(e) {}
   return json;
-}
+};
 
-async function fetchPriceData(id) {
+const fetchPriceData = async function(id) {
   if (FIXED_PRICE_ITEMS[id] !== undefined) {
     const value = FIXED_PRICE_ITEMS[id];
     return {buys:{unit_price:value}, sells:{unit_price:value}};
@@ -56,7 +57,7 @@ async function fetchPriceData(id) {
   priceCache.set(id, json);
   try { sessionStorage.setItem('price:' + id, JSON.stringify(json)); } catch(e){}
   return json;
-}
+};
 
 if (typeof window !== 'undefined') {
   window.DonesCore = { fetchItemData, fetchPriceData, isGiftName, shouldSkipMarketCheck };
@@ -112,3 +113,4 @@ document.addEventListener('DOMContentLoaded', function() {
     switchTab(defaultTab);
   }
 });
+})();
