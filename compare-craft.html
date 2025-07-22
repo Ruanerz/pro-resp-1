@@ -63,7 +63,7 @@
 
 
   
-  <script src="js/bundle-utils-1.js"></script>
+  <script src="dist/bundle-utils-1.min.js"></script>
 
   <!-- Modal del Buscador fuera de .container para igualar a index.html -->
   <div id="search-modal" class="search-modal hidden">
@@ -84,7 +84,7 @@
     const closeBtn = document.getElementById('close-search-modal');
     openBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      openSearchModal('js/search-modal-compare-craft.js');
+      openSearchModal('dist/search-modal-compare-craft.min.js');
     });
     closeBtn.addEventListener('click', closeSearchModal);
     modal.querySelector('.search-modal-backdrop').addEventListener('click', closeSearchModal);
@@ -94,11 +94,11 @@
   });
   </script>
 
-  <script src="js/item-tabs.js"></script>
-  <script src="js/feedback-modal.js"></script>
+  <script src="dist/item-tabs.min.js"></script>
+  <script src="dist/feedback-modal.min.js"></script>
   <!-- Nuevos módulos separados -->
-  <script type="module" src="js/items-core.js"></script>
-  <script type="module" src="js/compare-ui.js"></script>
+  <script type="module" src="dist/items-core.min.js"></script>
+  <script type="module" src="dist/compare-ui.min.js"></script>
 
   <script>
   // Override global de selectItem para integración con el modal en compare-craft
@@ -127,7 +127,7 @@
 };
 
   </script>
-<script src="js/bundle-auth-nav.js"></script>
+<script src="dist/bundle-auth-nav.min.js"></script>
 <script>
   // Inicializar autenticación cuando el DOM esté listo
   document.addEventListener('DOMContentLoaded', function() {
@@ -137,7 +137,7 @@
   });
 </script>
 
-<script src="js/storageUtils.js"></script>
+<script src="dist/storageUtils.min.js"></script>
 <!-- Manejadores de comparativa (guardar comparativa) -->
 </body>
 </html>
