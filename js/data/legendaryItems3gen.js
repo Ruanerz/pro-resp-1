@@ -1,2 +1,0 @@
-export const LEGENDARY_ITEMS_3GEN = window.LEGENDARY_ITEMS_3GEN;
-export default LEGENDARY_ITEMS_3GEN;
