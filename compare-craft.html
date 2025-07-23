@@ -140,5 +140,13 @@
 <script src="dist/storageUtils.min.js"></script>
 <!-- Manejadores de comparativa (guardar comparativa) -->
 <script src="dist/compareHandlers.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.comparativa &&
+        typeof window.comparativa.loadComparativaFromURL === 'function') {
+      window.comparativa.loadComparativaFromURL();
+    }
+  });
+</script>
 </body>
 </html>
