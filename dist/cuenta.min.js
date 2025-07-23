@@ -249,7 +249,7 @@ function loadAndDisplayComparativas() {
 
     comparativas.forEach((comp, idx) => {
         const listItem = document.createElement('li');
-        listItem.className = 'favorito-item';
+        listItem.className = 'favorito-item comparativa-item';
 
         // Ícono
         const icon = document.createElement('span');
