@@ -91,7 +91,7 @@
         const closeBtn = document.getElementById('close-search-modal');
         openBtn.addEventListener('click', function(e) {
           e.preventDefault();
-          openSearchModal();
+          openSearchModal('dist/search-modal.min.js');
         });
         closeBtn.addEventListener('click', closeSearchModal);
         modal.querySelector('.search-modal-backdrop').addEventListener('click', closeSearchModal);
