@@ -397,8 +397,8 @@ const precioVentaTotal = mainNode && typeof mainNode.sell_price === 'number' ? m
   }
   if (outputCount > 1) {
     const globalQty = window.globalQty || 1;
-    const precioCompraUnidadMercado = (_mainBuyPrice != null) ? (_mainBuyPrice * globalQty) / outputCount : 0;
-    const precioVentaUnidadMercado = (_mainSellPrice != null) ? (_mainSellPrice * globalQty) / outputCount : 0;
+    const precioCompraUnidadMercado = (_mainBuyPrice != null) ? _mainBuyPrice * globalQty : 0;
+    const precioVentaUnidadMercado = (_mainSellPrice != null) ? _mainSellPrice * globalQty : 0;
     const precioCraftingMinUnidadReal = outputCount > 0 ? precioCraftingMinTotal / outputCount : precioCraftingMinTotal;
     const preciosUnidadCorr = [precioCompraUnidadMercado, precioVentaUnidadMercado, precioCraftingMinUnidadReal];
     const precioMinimoUnidadReal = Math.min(...preciosUnidadCorr.filter(x => x > 0));
