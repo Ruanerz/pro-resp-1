@@ -949,8 +949,8 @@ async function createIngredientTree3(itemData, parent = null) {
       if (lowerName.includes('esquirla') && id !== 70820) return true;
       if (lowerName.includes('trébol')) return true;
       if (lowerName.includes('trebol')) return true;
-      // Las piedras suelen ser comerciables; solo excluir las rúnicas
-      if (lowerName.includes('piedra rúnica')) return true;
+      // Las piedras suelen ser comerciables; solo excluir la rúnica mística
+      if (lowerName.includes('piedra rúnica mística')) return true;
       if (lowerName.includes('bendición')) return true;
       if (lowerName.includes('tributo')) return true;
       if (lowerName.includes('esencia')) return true;
