@@ -558,8 +558,7 @@ async function createIngredientTree1(itemData, parent = null) {
       return lowerName.includes('bendición') ||
              lowerName.includes('tributo') ||
              lowerName.includes('esencia de la suerte') ||
-             lowerName.includes('reactivo') ||
-             lowerName.startsWith('don de') || 
+             lowerName.startsWith('don de') ||
              lowerName.endsWith('gift');
     }
     
@@ -956,7 +955,6 @@ async function createIngredientTree3(itemData, parent = null) {
       if (lowerName.includes('esencia')) return true;
       if (lowerName.includes('energía')) return true;
       if (lowerName.includes('energia')) return true;
-      if (lowerName.includes('reactivo')) return true;
       if (lowerName.startsWith('don de')) return true;
       if (lowerName.includes(' gift')) return true;
       if (lowerName.endsWith('gift')) return true;
