@@ -1,21 +1,15 @@
 // GW2 Item Tracker v2 - UI Y PRESENTACIÓN (item-ui.js)
 
-// --- Helpers para el input de cantidad global (definidos localmente) ---
-function setQtyInputValue(val) {
-  const input = document.getElementById('qty-global');
-  if (!input) return;
-  // Prefiere el valor temporal si existe
-  if (typeof window._qtyInputValue !== 'undefined') {
-    input.value = window._qtyInputValue;
-  } else {
-    input.value = window.globalQty;
-  }
-}
+import {
+  showLoader,
+  showError,
+  hideError,
+  setQtyInputValue,
+  getQtyInputValue
+} from './ui-helpers.js';
 
-function getQtyInputValue() {
-  const input = document.getElementById('qty-global');
-  return input ? parseInt(input.value, 10) : 1;
-}
+// Helpers para el input de cantidad global y mensajes de error se
+// comparten ahora desde ui-helpers.js
 
 // --- Helpers visuales ---
 
@@ -35,21 +29,7 @@ function renderWiki(name) {
 }
 
 // --- Helpers de UI ---
-function showLoader(show) {
-  const loader = document.getElementById('loader');
-  if (loader) loader.style.display = show ? 'block' : 'none';
-}
-function showError(msg) {
-  const errorMessage = document.getElementById('error-message');
-  if (errorMessage) {
-    errorMessage.textContent = msg;
-    errorMessage.style.display = 'block';
-  }
-}
-function hideError() {
-  const errorMessage = document.getElementById('error-message');
-  if (errorMessage) errorMessage.style.display = 'none';
-}
+
 
 // --- Renderizado recursivo de ingredientes ---
 function renderRows(ings, nivel = 1, parentId = null, rowGroupIndex = 0, parentExpanded = true, path = []) {

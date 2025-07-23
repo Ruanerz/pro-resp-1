@@ -14,25 +14,17 @@ import {
   findIngredientByPath,
   calcPercent
 } from './items-core.js';
+import {
+  showLoader,
+  showError,
+  hideError,
+  setQtyInputValue,
+  getQtyInputValue
+} from './ui-helpers.js';
 
 // Functions imported from items-core.js provide shared logic
 
-// --- Helpers para el input de cantidad global (definidos localmente) ---
-function setQtyInputValue(val) {
-  const input = document.getElementById('qty-global');
-  if (!input) return;
-  // Prefiere el valor temporal si existe
-  if (typeof window._qtyInputValue !== 'undefined') {
-    input.value = window._qtyInputValue;
-  } else {
-    input.value = window.globalQty;
-  }
-}
-
-function getQtyInputValue() {
-  const input = document.getElementById('qty-global');
-  return input ? parseInt(input.value, 10) : 1;
-}
+// --- Helpers para el input de cantidad global (definidos en ui-helpers.js) ---
 
 function isEquivalentParentId(a, b) {
   const nullLikes = [null, undefined, "null", ""];
@@ -75,22 +67,7 @@ function renderWiki(name) {
   `;
 }
 
-// --- Helpers de UI ---
-export function showLoader(show) {
-  const loader = document.getElementById('loader');
-  if (loader) loader.style.display = show ? 'block' : 'none';
-}
-export function showError(msg) {
-  const errorMessage = document.getElementById('error-message');
-  if (errorMessage) {
-    errorMessage.textContent = msg;
-    errorMessage.style.display = 'block';
-  }
-}
-export function hideError() {
-  const errorMessage = document.getElementById('error-message');
-  if (errorMessage) errorMessage.style.display = 'none';
-}
+// --- Helpers de UI definidos en ui-helpers.js ---
 
 // Inicializa el mapa de expansión principal por id
 if (typeof window._mainItemExpandedMap === 'undefined') {
