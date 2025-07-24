@@ -51,9 +51,25 @@
 <body>
     <!-- Video de fondo -->
     <video autoplay muted playsinline loop id="bg-video">
-      <source src="img/Secuencia 01.mp4" type="video/mp4">
+      <source id="bg-source" src="" type="video/mp4">
       Tu navegador no soporta video HTML5.
     </video>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const videoList = [
+          'img/Secuencia 01.mp4',
+          'img/Secuencia 02.mp4',
+          'img/Secuencia 03.mp4'
+        ];
+        const sourceEl = document.querySelector('#bg-video source');
+        if (sourceEl) {
+          const randomSrc = videoList[Math.floor(Math.random() * videoList.length)];
+          sourceEl.setAttribute('src', randomSrc);
+          const videoEl = document.getElementById('bg-video');
+          if (videoEl) videoEl.load();
+        }
+      });
+    </script>
     <!-- Overlay para atenuar video -->
     <div id="bg-overlay"></div>
   <header>
