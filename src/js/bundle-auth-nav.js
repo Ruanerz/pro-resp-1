@@ -1,81 +1,21 @@
 // Bundled auth and navigation helpers
 
 // ==== auth.js content ====
-const GOOGLE_CLIENT_ID = '943692746860-a4k9lfb5h9ds4o3umb7juf4rjce8afqf.apps.googleusercontent.com';
-const GOOGLE_REDIRECT_URI = `${window.location.origin}/auth.html`;
+let currentUser = null;
 
-let currentUser = JSON.parse(localStorage.getItem('user')) || null;
-
-function setAuthToken(token) {
-    // La bandera HttpOnly debe configurarse en el servidor
-    document.cookie = `auth_token=${token}; path=/`;
-}
-
-function getAuthToken() {
-    const m = document.cookie.match(/(?:^|; )auth_token=([^;]+)/);
-    return m ? m[1] : null;
-}
-
-function deleteAuthToken() {
-    document.cookie = 'auth_token=; path=/; max-age=0';
-}
-
-// Procesa el fragmento OAuth (`#access_token=...`) que Discord devuelve cuando se usa response_type=token
-async function processOAuthFragment() {
-    const hash = window.location.hash.startsWith('#') ? window.location.hash.substring(1) : '';
-    if (!hash) return;
-    const params = new URLSearchParams(hash);
-    const accessToken = params.get('access_token');
-    if (!accessToken) return;
-    const state = params.get('state') || 'discord';
+async function fetchCurrentUser() {
     try {
-        let user = null;
-        if (state === 'discord') {
-            const resp = await fetch('https://discord.com/api/users/@me', {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-            if (!resp.ok) throw new Error('Error al obtener perfil de Discord');
-            const profile = await resp.json();
-            let avatarUrl;
-            if (profile.avatar) {
-                avatarUrl = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`;
-            } else {
-                const index = profile.discriminator ? parseInt(profile.discriminator) % 5 : (parseInt(profile.id) >> 22) % 6;
-                avatarUrl = `https://cdn.discordapp.com/embed/avatars/${index}.png`;
-            }
-            user = {
-                id: profile.id,
-                name: profile.global_name || profile.username,
-                email: profile.email || '',
-                picture: avatarUrl
-            };
-        } else {
-            return;
-        }
-        localStorage.setItem('user', JSON.stringify(user));
-        setAuthToken(accessToken);
-        currentUser = user;
-        history.replaceState(null, null, window.location.pathname + window.location.search);
-    } catch (err) {
-        console.error('Error procesando OAuth fragment:', err);
+        const r = await fetch('backend/api/user.php');
+        if (!r.ok) return null;
+        return r.json();
+    } catch (e) {
+        return null;
     }
 }
 
 async function initAuth() {
-    await processOAuthFragment();
-    currentUser = JSON.parse(localStorage.getItem('user')) || null;
+    currentUser = await fetchCurrentUser();
     updateAuthUI();
-
-    if (getAuthToken() && !currentUser) {
-        const userFromStorage = localStorage.getItem('user');
-        if (userFromStorage) {
-            currentUser = JSON.parse(userFromStorage);
-            updateAuthUI();
-        } else {
-            deleteAuthToken();
-            updateAuthUI();
-        }
-    }
 }
 
 function updateAuthUI() {
@@ -83,23 +23,20 @@ function updateAuthUI() {
 }
 
 function loginWithGoogle() {
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}&response_type=token&scope=email%20profile&access_type=online`;
-    window.location.href = authUrl;
+    window.location.href = 'backend/auth.php?provider=google';
 }
 
 
 function logout() {
     currentUser = null;
-    localStorage.removeItem('user');
-    localStorage.removeItem('auth_token');
-    deleteAuthToken();
+    document.cookie = 'session_id=; path=/; max-age=0';
     updateAuthUI();
     window.location.href = 'index.html';
 }
 
 function requireAuth() {
     if (!currentUser) {
-        window.location.href = 'auth.html?redirect=' + encodeURIComponent(window.location.pathname);
+        window.location.href = 'login.html';
         return false;
     }
     return true;
@@ -108,11 +45,9 @@ function requireAuth() {
 document.addEventListener('DOMContentLoaded', initAuth);
 
 const DISCORD_CLIENT_ID = '1391252012561207386';
-const DISCORD_REDIRECT_URI = "https://ruanerz.github.io/pro-resp-1/index.html";
 
 function loginWithDiscord() {
-    const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=token&scope=identify&state=discord`;
-    window.location.href = authUrl;
+    window.location.href = 'backend/auth.php?provider=discord';
 }
 
 window.Auth = {
@@ -209,8 +144,8 @@ const navigationData = {
 function updateAuthMenu() {
     const loginBtn = document.getElementById('loginBtn');
     const userInfo = document.getElementById('userInfo');
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    const isLoggedIn = !!getAuthToken();
+    const user = currentUser;
+    const isLoggedIn = !!user;
 
     document.querySelectorAll('[data-requires-login]')
         .forEach(link => {
@@ -235,8 +170,6 @@ function updateAuthMenu() {
         if (userInfo) userInfo.style.display = 'none';
     }
 }
-
-window.addEventListener('storage', updateAuthMenu);
 
 function showAuthOptions() {
     let modal = document.getElementById('auth-modal');
@@ -270,7 +203,7 @@ function showAccountModal() {
     const existing = document.getElementById('account-modal');
     if (existing) return;
 
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const user = currentUser;
     if (!user) return;
 
     const modal = document.createElement('div');

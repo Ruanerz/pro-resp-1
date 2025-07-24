@@ -1,68 +1,85 @@
-// storageUtils.js
-// Utilidades para manejar favoritos en localStorage
+// storageUtils.js - async helpers using backend API
 
-/**
- * Guarda un ítem como favorito
- * @param {string} key - Clave de almacenamiento (ej: 'gw2_favoritos_items')
- * @param {Object} item - Objeto con id y nombre del ítem
- * @param {number} maxItems - Máximo de ítems a guardar (opcional, por defecto 20)
- * @returns {Array} - Lista actualizada de favoritos
- */
-function saveFavorito(key, item, maxItems = 20) {
-    if (!item || !item.id) return [];
-    
-    // Obtener favoritos actuales
-    const favoritos = getFavoritos(key);
-    
-    // Evitar duplicados
-    const sinDuplicados = favoritos.filter(fav => fav.id !== item.id);
-    
-    // Agregar el nuevo ítem al principio
-    const nuevosFavoritos = [item, ...sinDuplicados];
-    
-    // Limitar la cantidad de ítems
-    const listaRecortada = nuevosFavoritos.slice(0, maxItems);
-    
-    // Guardar en localStorage
-    localStorage.setItem(key, JSON.stringify(listaRecortada));
-    
-    return listaRecortada;
-}
-
-/**
- * Obtiene la lista de favoritos
- * @param {string} key - Clave de almacenamiento
- * @returns {Array} - Lista de favoritos
- */
-function getFavoritos(key) {
+/** Obtiene los favoritos del usuario desde el backend */
+async function getFavoritos() {
     try {
-        return JSON.parse(localStorage.getItem(key) || '[]');
+        const r = await fetch('backend/api/favorites.php');
+        if (!r.ok) return [];
+        const data = await r.json();
+        return Array.isArray(data) ? data.map(id => ({ id: parseInt(id, 10) })) : [];
     } catch (e) {
-        console.error('Error al leer favoritos:', e);
+        console.error('Error obteniendo favoritos', e);
         return [];
     }
 }
 
-/**
- * Elimina un ítem de favoritos
- * @param {string} key - Clave de almacenamiento
- * @param {number} itemId - ID del ítem a eliminar
- * @returns {Array} - Lista actualizada de favoritos
- */
-function removeFavorito(key, itemId) {
-    const favoritos = getFavoritos(key);
-    const nuevosFavoritos = favoritos.filter(item => item.id !== itemId);
-    localStorage.setItem(key, JSON.stringify(nuevosFavoritos));
-    return nuevosFavoritos;
+/** Guarda un ítem como favorito en el backend */
+async function saveFavorito(item) {
+    if (!item || !item.id) return [];
+    try {
+        await fetch('backend/api/favorites.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item_id: item.id })
+        });
+    } catch (e) {
+        console.error('Error guardando favorito', e);
+    }
+    return getFavoritos();
 }
 
-/**
- * Muestra una notificación toast
- * @param {string} message - Mensaje a mostrar
- * @param {string} type - Tipo de notificación (success, error, info)
- */
+/** Elimina un favorito en el backend */
+async function removeFavorito(itemId) {
+    try {
+        await fetch(`backend/api/favorites.php?item_id=${itemId}`, { method: 'DELETE' });
+    } catch (e) {
+        console.error('Error eliminando favorito', e);
+    }
+    return getFavoritos();
+}
+
+/** Obtiene las comparativas guardadas desde el backend */
+async function getComparativas() {
+    try {
+        const r = await fetch('backend/api/comparisons.php');
+        if (!r.ok) return [];
+        const data = await r.json();
+        return Array.isArray(data)
+            ? data.map(c => ({ id: c.id, ids: [Number(c.item_left), Number(c.item_right)] }))
+            : [];
+    } catch (e) {
+        console.error('Error obteniendo comparativas', e);
+        return [];
+    }
+}
+
+/** Guarda una comparativa (usa los dos primeros IDs) */
+async function saveComparativa(comparativa) {
+    if (!comparativa || !Array.isArray(comparativa.ids) || comparativa.ids.length < 2) return [];
+    try {
+        await fetch('backend/api/comparisons.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item_left: comparativa.ids[0], item_right: comparativa.ids[1] })
+        });
+    } catch (e) {
+        console.error('Error guardando comparativa', e);
+    }
+    return getComparativas();
+}
+
+/** Elimina una comparativa por id */
+async function removeComparativa(id) {
+    try {
+        await fetch(`backend/api/comparisons.php?id=${id}`, { method: 'DELETE' });
+    } catch (e) {
+        console.error('Error eliminando comparativa', e);
+    }
+    return getComparativas();
+}
+
+/** Muestra un toast sencillo */
 function showToast(message, type = 'success') {
-    // Crear contenedor si no existe
     let container = document.getElementById('toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -71,89 +88,27 @@ function showToast(message, type = 'success') {
         document.body.appendChild(container);
     }
 
-    // Crear toast
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.style.opacity = '0';
     toast.textContent = message;
-    
-    // Agregar al DOM
     container.appendChild(toast);
-    
-    // Mostrar con animación
-    setTimeout(() => {
-        toast.style.opacity = '1';
-    }, 10);
-    
-    // Ocultar después de 3 segundos
+    setTimeout(() => { toast.style.opacity = '1'; }, 10);
     setTimeout(() => {
         toast.style.opacity = '0';
-        // Eliminar después de la animación
         setTimeout(() => {
             toast.remove();
-            // Eliminar contenedor si no hay más toasts
-            if (container.children.length === 0) {
-                container.remove();
-            }
+            if (container.children.length === 0) container.remove();
         }, 300);
     }, 3000);
 }
 
-// --- Nuevas utilidades para guardar comparativas ---
-/**
- * Guarda una comparativa
- * @param {string} key - Clave de almacenamiento (ej: 'gw2_comparativas')
- * @param {Object} comparativa - Objeto con arreglo ids[] y metadatos (nombres, timestamp)
- * @param {number} maxItems - Máximo de comparativas a guardar
- * @returns {Array} - Lista actualizada de comparativas
- */
-function saveComparativa(key, comparativa, maxItems = 20) {
-    if (!comparativa || !Array.isArray(comparativa.ids) || comparativa.ids.length === 0) return [];
-
-    const existentes = getComparativas(key);
-
-    // Generar una firma única basada en los IDs ordenados
-    const firma = [...comparativa.ids].sort((a,b)=>a-b).join('-');
-
-    const sinDuplicados = existentes.filter(c => {
-        const f = Array.isArray(c.ids) ? [...c.ids].sort((a,b)=>a-b).join('-') : '';
-        return f !== firma;
-    });
-
-    const nuevas = [comparativa, ...sinDuplicados].slice(0, maxItems);
-    localStorage.setItem(key, JSON.stringify(nuevas));
-    return nuevas;
-}
-
-function getComparativas(key) {
-    try {
-        return JSON.parse(localStorage.getItem(key) || '[]');
-    } catch(e) {
-        console.error('Error al leer comparativas:', e);
-        return [];
-    }
-}
-
-function removeComparativa(key, firmaComparativa) {
-    const existentes = getComparativas(key);
-    const filtradas = existentes.filter(c => {
-        const f = Array.isArray(c.ids) ? [...c.ids].sort((a,b)=>a-b).join('-') : '';
-        return f !== firmaComparativa;
-    });
-    localStorage.setItem(key, JSON.stringify(filtradas));
-    return filtradas;
-}
-
-// Exportar funciones para uso global
 window.StorageUtils = {
-    // Favoritos de ítems
     saveFavorito,
     getFavoritos,
     removeFavorito,
-    // Comparativas
     saveComparativa,
     getComparativas,
     removeComparativa,
-    // Misceláneas
     showToast
 };

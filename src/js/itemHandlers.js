@@ -27,7 +27,7 @@ function initSaveItemHandler() {
 /**
  * Maneja el guardado de un ítem
  */
-function handleSaveItem() {
+async function handleSaveItem() {
     // Obtener datos del ítem actual
     const itemId = new URLSearchParams(window.location.search).get('id');
     const itemName = document.querySelector('.item-name')?.textContent || 'Ítem sin nombre';
@@ -38,8 +38,10 @@ function handleSaveItem() {
     }
     
     // Guardar el ítem
-    const item = { id: parseInt(itemId), nombre: itemName };
-    window.StorageUtils?.saveFavorito('gw2_favoritos_items', item);
+    const item = { id: parseInt(itemId, 10), nombre: itemName };
+    if (window.StorageUtils && window.StorageUtils.saveFavorito) {
+        await window.StorageUtils.saveFavorito(item);
+    }
     
     // Mostrar notificación
     window.StorageUtils?.showToast('Ítem guardado en favoritos');

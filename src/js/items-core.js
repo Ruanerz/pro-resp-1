@@ -433,7 +433,7 @@ window.comparativa.agregarItemPorId = async function(id) {
   }
 };
 
-window.comparativa.handleSaveComparativa = function() {
+window.comparativa.handleSaveComparativa = async function() {
   if (!window.ingredientObjs || window.ingredientObjs.length === 0) {
     window.StorageUtils?.showToast('Agrega al menos un ítem a la comparativa', 'error');
     return;
@@ -442,7 +442,7 @@ window.comparativa.handleSaveComparativa = function() {
   const nombres = window.ingredientObjs.map(obj => obj.name);
   const comparativa = { ids, nombres, timestamp: Date.now() };
   if (window.StorageUtils && typeof window.StorageUtils.saveComparativa === 'function') {
-    window.StorageUtils.saveComparativa('gw2_comparativas', comparativa);
+    await window.StorageUtils.saveComparativa(comparativa);
     window.StorageUtils.showToast('Comparativa guardada');
   } else {
     alert('StorageUtils no está disponible.');
