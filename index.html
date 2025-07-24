@@ -61,12 +61,22 @@
           'img/Secuencia 02.mp4',
           'img/Secuencia 03.mp4'
         ];
-        const sourceEl = document.querySelector('#bg-video source');
-        if (sourceEl) {
+        const videoEl = document.getElementById('bg-video');
+        if (videoEl) {
           const randomSrc = videoList[Math.floor(Math.random() * videoList.length)];
-          sourceEl.setAttribute('src', randomSrc);
-          const videoEl = document.getElementById('bg-video');
-          if (videoEl) videoEl.load();
+          // Añadir timestamp para evitar caché y registrar en consola
+          const randomSrcWithTs = randomSrc + '?v=' + Date.now();
+          console.log('Background video selected:', randomSrc);
+
+          // Asignar directamente al atributo src del elemento video para garantizar la recarga
+          videoEl.setAttribute('src', randomSrcWithTs);
+          // Por compatibilidad, si existe un <source>, actualízalo también
+          const sourceEl = videoEl.querySelector('source');
+          if (sourceEl) sourceEl.setAttribute('src', randomSrcWithTs);
+
+          // Forzar la recarga y reproducción
+          videoEl.load();
+          videoEl.play().catch(()=>{});
         }
       });
     </script>
