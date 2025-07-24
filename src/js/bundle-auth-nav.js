@@ -87,9 +87,6 @@ function loginWithGoogle() {
     window.location.href = authUrl;
 }
 
-function loginWithFacebook() {
-    alert('Próximamente: Inicio de sesión con Facebook');
-}
 
 function logout() {
     currentUser = null;
@@ -122,7 +119,6 @@ window.Auth = {
     get currentUser() { return currentUser; },
     initAuth,
     loginWithGoogle,
-    loginWithFacebook,
     loginWithDiscord,
     logout,
     requireAuth
@@ -254,9 +250,6 @@ function showAuthOptions() {
                 <button id="google-login-btn" class="auth-btn google-btn">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="google"> Google
                 </button>
-                <button id="facebook-login-btn" class="auth-btn facebook-btn">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg" alt="facebook"> Facebook
-                </button>
                 <button id="discord-login-btn" class="auth-btn discord-btn">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/discord/discord-original.svg" alt="discord"> Discord
                 </button>
@@ -266,9 +259,6 @@ function showAuthOptions() {
         document.body.appendChild(modal);
         document.getElementById('google-login-btn').onclick = () => {
             if (window.Auth && window.Auth.loginWithGoogle) window.Auth.loginWithGoogle();
-        };
-        document.getElementById('facebook-login-btn').onclick = () => {
-            if (window.Auth && window.Auth.loginWithFacebook) window.Auth.loginWithFacebook();
         };
         document.getElementById('discord-login-btn').onclick = () => {
             if (window.Auth && window.Auth.loginWithDiscord) window.Auth.loginWithDiscord();
