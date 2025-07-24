@@ -3,14 +3,13 @@ if (typeof window.StorageUtils === 'undefined') {
     console.error('Error: storageUtils.js no está cargado');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificar autenticación
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-        // Redirigir al login si no está autenticado
+document.addEventListener('DOMContentLoaded', async function() {
+    const resp = await fetch('backend/api/user.php');
+    if (!resp.ok) {
         window.location.href = 'login.html';
         return;
     }
+    const user = await resp.json();
 
     // Actualizar el saludo con el nombre del usuario
     const greetingElement = document.querySelector('.videos-board-topic');
@@ -79,9 +78,9 @@ window.addEventListener('load', hideLoadingOverlay);
 /**
  * Actualiza los contadores de la sección de estadísticas (favoritos y comparaciones)
  */
-function updateStats() {
-    const favs = window.StorageUtils?.getFavoritos('gw2_favoritos_items') || [];
-    const comps = window.StorageUtils?.getComparativas('gw2_comparativas') || [];
+async function updateStats() {
+    const favs = await window.StorageUtils?.getFavoritos();
+    const comps = await window.StorageUtils?.getComparativas();
 
     const favSpan = document.getElementById('favoritosCount');
     if (favSpan) favSpan.textContent = favs.length;
@@ -94,7 +93,7 @@ function updateStats() {
 /**
  * Carga y muestra los ítems guardados en la lista de favoritos
  */
-function loadAndDisplayFavoritos() {
+async function loadAndDisplayFavoritos() {
     const container = document.getElementById('favoritos-items-container');
     if (!container) {
         console.error('No se encontró el contenedor de favoritos');
@@ -102,7 +101,7 @@ function loadAndDisplayFavoritos() {
     }
     
     // Obtener los ítems guardados usando storageUtils
-    const favoritos = window.StorageUtils?.getFavoritos('gw2_favoritos_items') || [];
+    const favoritos = await window.StorageUtils?.getFavoritos();
     
     if (!favoritos.length) {
         container.innerHTML = `
@@ -145,16 +144,6 @@ function loadAndDisplayFavoritos() {
                 if (data.icon) icon.src = data.icon;
                 if (data.name) {
                     link.textContent = data.name;
-                    // Actualizar storage si no tenía nombre
-                    if (!item.nombre) {
-                        item.nombre = data.name;
-                        const favsAct = window.StorageUtils.getFavoritos('gw2_favoritos_items');
-                        const idx = favsAct.findIndex(f => f.id === item.id);
-                        if (idx !== -1) {
-                            favsAct[idx].nombre = data.name;
-                            localStorage.setItem('gw2_favoritos_items', JSON.stringify(favsAct));
-                        }
-                    }
                 }
             })
             .catch(err => console.error('Error fetching item detalles:', err));
@@ -169,13 +158,14 @@ function loadAndDisplayFavoritos() {
         deleteBtn.className = 'delete-favorito';
         deleteBtn.title = 'Eliminar de favoritos';
         deleteBtn.innerHTML = '&times;';
-        deleteBtn.onclick = (e) => {
+        deleteBtn.onclick = async (e) => {
             e.preventDefault();
             e.stopPropagation();
             
             if (confirm(`¿Eliminar "${item.nombre || 'este ítem'}" de favoritos?`)) {
-                // Eliminar usando storageUtils
-                window.StorageUtils?.removeFavorito('gw2_favoritos_items', item.id);
+                if (window.StorageUtils && window.StorageUtils.removeFavorito) {
+                    await window.StorageUtils.removeFavorito(item.id);
+                }
                 listItem.remove();
                 
                 // Mostrar mensaje si no quedan más ítems
@@ -225,14 +215,14 @@ function loadAndDisplayFavoritos() {
 /**
  * Carga y muestra las comparativas guardadas
  */
-function loadAndDisplayComparativas() {
+async function loadAndDisplayComparativas() {
     const container = document.getElementById('lista-comparaciones');
     if (!container) {
         console.error('No se encontró el contenedor de comparativas');
         return;
     }
 
-    const comparativas = window.StorageUtils?.getComparativas('gw2_comparativas') || [];
+    const comparativas = await window.StorageUtils?.getComparativas();
 
     if (!comparativas.length) {
         container.innerHTML = `
@@ -256,8 +246,8 @@ function loadAndDisplayComparativas() {
         icon.className = 'favorito-icon';
         icon.innerHTML = '📊';
 
-        const nombre = comp.nombres && comp.nombres.length ? comp.nombres.join(', ') : `Comparativa ${idx + 1}`;
-        const fecha = new Date(comp.timestamp || Date.now()).toLocaleDateString();
+        const nombre = `Comparativa ${idx + 1}`;
+        const fecha = '';
 
         const link = document.createElement('a');
         link.href = `compare-craft.html?ids=${comp.ids.join(',')}`;
@@ -266,18 +256,19 @@ function loadAndDisplayComparativas() {
 
         const meta = document.createElement('span');
         meta.className = 'favorito-id';
-        meta.textContent = `(${comp.ids.length} ítems · ${fecha})`;
+        meta.textContent = `(${comp.ids.length} ítems)`;
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-favorito';
         deleteBtn.title = 'Eliminar comparativa';
         deleteBtn.innerHTML = '&times;';
-        deleteBtn.onclick = (e) => {
+        deleteBtn.onclick = async (e) => {
             e.preventDefault();
             e.stopPropagation();
             if (confirm('¿Eliminar esta comparativa?')) {
-                const firma = [...comp.ids].sort((a,b)=>a-b).join('-');
-                window.StorageUtils?.removeComparativa('gw2_comparativas', firma);
+                if (window.StorageUtils && window.StorageUtils.removeComparativa) {
+                    await window.StorageUtils.removeComparativa(comp.id);
+                }
                 listItem.remove();
                 if (document.querySelectorAll('.comparativa-item').length === 0) {
                     container.innerHTML = '<p>No hay comparativas guardadas.</p>';
