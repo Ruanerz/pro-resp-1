@@ -1,7 +1,7 @@
 // Bundled auth and navigation helpers
 
 // ==== auth.js content ====
-const GOOGLE_CLIENT_ID = '943692746860-dhc6ofk0rkl93s6ablfarv10fk1ghtnd.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '943692746860-a4k9lfb5h9ds4o3umb7juf4rjce8afqf.apps.googleusercontent.com';
 const GOOGLE_REDIRECT_URI = `${window.location.origin}/auth.html`;
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
