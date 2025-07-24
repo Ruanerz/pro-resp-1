@@ -251,7 +251,7 @@ function showAuthOptions() {
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="google"> Google
                 </button>
                 <button id="discord-login-btn" class="auth-btn discord-btn">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/discord/discord-original.svg" alt="discord"> Discord
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/discordjs/discordjs-original.svg" alt="discord"> Discord
                 </button>
                 <a href="login.html" class="auth-classic-link">¿Prefieres iniciar sesión clásico?</a>
                 <button onclick="document.getElementById('auth-modal').remove()" class="auth-cancel-btn">Cancelar</button>
