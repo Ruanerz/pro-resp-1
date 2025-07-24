@@ -32,9 +32,9 @@
     <!-- Botones de navegación -->
     <nav class="item-tabs-nav">
       <button class="item-tab-btn" data-tab="info-item">Crafteo</button>
-      <button class="item-tab-btn" data-tab="resumen-mercado">Resumen Mercado</button>
-      <button class="item-tab-btn" data-tab="tab-mejores-horas-content">Actividad Reciente</button>
-      <button class="item-tab-btn" id="btn-guardar-item">Guardar ítem</button>
+      <button class="item-tab-btn" data-tab="resumen-mercado" data-requires-login="true">Resumen Mercado</button>
+      <button class="item-tab-btn" data-tab="tab-mejores-horas-content" data-requires-login="true">Actividad Reciente</button>
+      <button class="item-tab-btn" id="btn-guardar-item" data-requires-login="true">Guardar ítem</button>
     </nav>
     
     <div class="container">
@@ -45,8 +45,8 @@
         <div id="seccion-comparativa"></div>
         <div id="seccion-crafting"></div>
       </div>
-      <div id="resumen-mercado" style="display:none;"></div>
-      <div id="tab-mejores-horas-content" style="display:none;">
+      <div id="resumen-mercado" style="display:none;" data-requires-login="true"></div>
+      <div id="tab-mejores-horas-content" style="display:none;" data-requires-login="true">
         <div class="card">
           <h3>Ventas y Compras por Hora</h3>
           <canvas id="ventas-compras-chart" height="120"></canvas>
@@ -100,24 +100,6 @@
   document.addEventListener('DOMContentLoaded', function() {
     if (window.Auth && typeof window.Auth.initAuth === 'function') {
       window.Auth.initAuth();
-    }
-  });
-</script>
-<script>
-  // Ocultar pestañas de mercado y actividad si no hay usuario autenticado
-  document.addEventListener('DOMContentLoaded', function() {
-    const loggedIn = !!localStorage.getItem('auth_token');
-    if (!loggedIn) {
-      document.querySelectorAll(
-        '.item-tab-btn[data-tab="resumen-mercado"],\
-        .item-tab-btn[data-tab="tab-mejores-horas-content"]'
-      ).forEach(el => el.style.display = 'none');
-
-      const resumen = document.getElementById('resumen-mercado');
-      if (resumen) resumen.style.display = 'none';
-
-      const mejores = document.getElementById('tab-mejores-horas-content');
-      if (mejores) mejores.style.display = 'none';
     }
   });
 </script>
