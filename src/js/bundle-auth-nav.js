@@ -94,6 +94,7 @@ function loginWithFacebook() {
 function logout() {
     currentUser = null;
     localStorage.removeItem('user');
+    localStorage.removeItem('auth_token');
     deleteAuthToken();
     updateAuthUI();
     window.location.href = 'index.html';
