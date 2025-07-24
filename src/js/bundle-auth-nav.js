@@ -6,6 +6,20 @@ const GOOGLE_REDIRECT_URI = `${window.location.origin}/auth.html`;
 
 let currentUser = JSON.parse(localStorage.getItem('user')) || null;
 
+function setAuthToken(token) {
+    // La bandera HttpOnly debe configurarse en el servidor
+    document.cookie = `auth_token=${token}; path=/`;
+}
+
+function getAuthToken() {
+    const m = document.cookie.match(/(?:^|; )auth_token=([^;]+)/);
+    return m ? m[1] : null;
+}
+
+function deleteAuthToken() {
+    document.cookie = 'auth_token=; path=/; max-age=0';
+}
+
 // Procesa el fragmento OAuth (`#access_token=...`) que Discord devuelve cuando se usa response_type=token
 async function processOAuthFragment() {
     const hash = window.location.hash.startsWith('#') ? window.location.hash.substring(1) : '';
@@ -39,7 +53,7 @@ async function processOAuthFragment() {
             return;
         }
         localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('auth_token', accessToken);
+        setAuthToken(accessToken);
         currentUser = user;
         history.replaceState(null, null, window.location.pathname + window.location.search);
     } catch (err) {
@@ -52,13 +66,13 @@ async function initAuth() {
     currentUser = JSON.parse(localStorage.getItem('user')) || null;
     updateAuthUI();
 
-    if (localStorage.getItem('auth_token') && !currentUser) {
+    if (getAuthToken() && !currentUser) {
         const userFromStorage = localStorage.getItem('user');
         if (userFromStorage) {
             currentUser = JSON.parse(userFromStorage);
             updateAuthUI();
         } else {
-            localStorage.removeItem('auth_token');
+            deleteAuthToken();
             updateAuthUI();
         }
     }
@@ -80,7 +94,7 @@ function loginWithFacebook() {
 function logout() {
     currentUser = null;
     localStorage.removeItem('user');
-    localStorage.removeItem('auth_token');
+    deleteAuthToken();
     updateAuthUI();
     window.location.href = 'index.html';
 }
@@ -199,7 +213,7 @@ function updateAuthMenu() {
     const loginBtn = document.getElementById('loginBtn');
     const userInfo = document.getElementById('userInfo');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
-    const isLoggedIn = !!localStorage.getItem('auth_token');
+    const isLoggedIn = !!getAuthToken();
 
     document.querySelectorAll('[data-requires-login]')
         .forEach(link => {
