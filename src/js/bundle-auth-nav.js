@@ -165,7 +165,7 @@ const ThemeManager = {
 
 const navigationData = {
     menuItems: [
-        { text: 'Inicio', href: '/', target: 'tab-detalles', class: '' },
+        { text: 'Inicio', href: 'index.html', target: 'tab-detalles', class: '' },
         { text: 'Dones', href: 'dones.html', target: 'tab-crafteo', class: '' },
         { text: 'Comparativa', href: 'compare-craft.html', target: 'tab-comparativa', class: '', requiresLogin: true },
         { text: 'Fractales', href: 'fractales-gold.html', target: 'tab-fractales', class: '', requiresLogin: true },
