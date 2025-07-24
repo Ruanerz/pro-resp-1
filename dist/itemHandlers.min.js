@@ -14,7 +14,7 @@ function initSaveItemHandler() {
     if (!saveButton) return;
     
     // Mostrar/ocultar según autenticación
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const user = window.Auth && window.Auth.currentUser;
     if (!user) {
         saveButton.style.display = 'none';
         return;
