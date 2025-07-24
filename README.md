@@ -34,3 +34,30 @@ Modules such as `dones.js` rely on this object to fetch legendary item informati
 - Todas las páginas HTML ahora cargan scripts desde `dist/` en lugar de `js/`.
 - Los archivos fuente originales se movieron a `src/js`.
 - Varias funciones de `items-core.js` se exponen en `window` para seguir siendo accesibles sin módulos.
+
+## Configuración del backend
+
+El proyecto incluye un pequeño backend en PHP ubicado en `backend/` que se encarga de guardar favoritos, comparaciones y la información de la sesión.
+
+### Crear la base de datos
+
+1. Crea una base de datos en tu servidor MySQL (por defecto se usa `gw2db`).
+2. Ejecuta el script `setup.sql` para crear las tablas necesarias:
+
+   ```bash
+   mysql -u <usuario> -p <nombre_db> < backend/setup.sql
+   ```
+
+### Configurar credenciales
+
+`backend/config.php` lee las credenciales de conexión mediante las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASS`. Si no existen, se emplean los valores predeterminados definidos en el archivo. Puedes exportar dichas variables en tu terminal o modificar los valores por defecto según tu entorno.
+
+### Endpoints disponibles
+
+Dentro de `backend/api/` existen tres endpoints principales que el frontend consume mediante `fetch`:
+
+- **`user.php`** – Devuelve la información del usuario autenticado.
+- **`favorites.php`** – Permite listar, añadir o eliminar IDs de ítems favoritos usando los métodos `GET`, `POST` y `DELETE` respectivamente.
+- **`comparisons.php`** – Gestiona las comparativas guardadas con la misma convención de métodos HTTP.
+
+Todos ellos requieren que el navegador envíe la cookie `session_id` generada al autenticarse con `auth.php` y `oauth_callback.php`. Los módulos de `src/js/storageUtils.js` y `src/js/cuenta.js` muestran ejemplos de cómo se consumen desde el frontend.
