@@ -31,12 +31,12 @@ function logout() {
     currentUser = null;
     document.cookie = 'session_id=; path=/; max-age=0';
     updateAuthUI();
-    window.location.href = 'index.html';
+    window.location.href = '/';
 }
 
 function requireAuth() {
     if (!currentUser) {
-        window.location.href = 'login.html';
+        window.location.href = '/login';
         return false;
     }
     return true;
@@ -97,12 +97,12 @@ const ThemeManager = {
 
 const navigationData = {
     menuItems: [
-        { text: 'Inicio', href: 'index.html', target: 'tab-detalles', class: '' },
-        { text: 'Dones', href: 'dones.html', target: 'tab-crafteo', class: '' },
-        { text: 'Comparativa', href: 'compare-craft.html', target: 'tab-comparativa', class: '', requiresLogin: true },
-        { text: 'Fractales', href: 'fractales-gold.html', target: 'tab-fractales', class: '', requiresLogin: true },
-        { text: 'Legendarias', href: 'leg-craft.html', target: 'tab-leg-craft', class: '' },
-        { text: 'Forja Mística', href: 'forja-mistica.html', target: 'tab-forja-mistica', class: '' }
+        { text: 'Inicio', href: '/', target: 'tab-detalles', class: '' },
+        { text: 'Dones', href: '/dones', target: 'tab-crafteo', class: '' },
+        { text: 'Comparativa', href: '/compare-craft', target: 'tab-comparativa', class: '', requiresLogin: true },
+        { text: 'Fractales', href: '/fractales-gold', target: 'tab-fractales', class: '', requiresLogin: true },
+        { text: 'Legendarias', href: '/leg-craft', target: 'tab-leg-craft', class: '' },
+        { text: 'Forja Mística', href: '/forja-mistica', target: 'tab-forja-mistica', class: '' }
     ],
     rightMenuItems: [
         {
@@ -124,7 +124,7 @@ const navigationData = {
             id: 'loginBtn',
             onClick: (e) => {
                 e.preventDefault();
-                window.location.href = 'login.html';
+                window.location.href = '/login';
             }
         },
         {
@@ -186,7 +186,7 @@ function showAuthOptions() {
                 <button id="discord-login-btn" class="auth-btn discord-btn">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/discordjs/discordjs-original.svg" alt="discord"> Discord
                 </button>
-                <a href="login.html" class="auth-classic-link">¿Prefieres iniciar sesión clásico?</a>
+                <a href="/login" class="auth-classic-link">¿Prefieres iniciar sesión clásico?</a>
                 <button onclick="document.getElementById('auth-modal').remove()" class="auth-cancel-btn">Cancelar</button>
             </div>`;
         document.body.appendChild(modal);
@@ -214,7 +214,7 @@ function showAccountModal() {
             <img src="${user.picture || 'https://via.placeholder.com/64'}" class="account-avatar" alt="avatar">
             <div class="account-name">${user.name || 'Usuario'}</div>
             <div class="account-email">${user.email || ''}</div>
-            <a href="cuenta.html" class="account-link">Mi Cuenta</a>
+            <a href="/cuenta" class="account-link">Mi Cuenta</a>
             <button onclick="window.Auth && window.Auth.logout && window.Auth.logout()" class="logout-btn">Cerrar sesión</button>
             <button class="close-account-btn">Cerrar</button>
         </div>`;
