@@ -6,7 +6,7 @@
     if (typeof initSearchModal === 'function') {
       initSearchModal({
         onSelect: function(id) {
-          window.location.href = `item.html?id=${id}`;
+          window.location.href = `/item?id=${id}`;
         },
         formatPrice: window.formatGoldColored,
         useSuggestions: false
