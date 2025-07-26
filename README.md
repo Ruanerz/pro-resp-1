@@ -52,6 +52,16 @@ El proyecto incluye un pequeño backend en PHP ubicado en `backend/` que se enca
 
 `backend/config.php` lee las credenciales de conexión mediante las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASS`. Si no existen, se emplean los valores predeterminados definidos en el archivo. Puedes exportar dichas variables en tu terminal o modificar los valores por defecto según tu entorno.
 
+Adicionalmente, los scripts de autenticación utilizan las variables de entorno `GOOGLE_CLIENT_ID`, `DISCORD_CLIENT_ID` y `OAUTH_REDIRECT_URI`. Asegúrate de proporcionarlas al desplegar el backend. Por ejemplo:
+
+```bash
+export GOOGLE_CLIENT_ID=943692746860-350j1grj2mn4eddbhkmc9vrbfi1565fa.apps.googleusercontent.com
+export DISCORD_CLIENT_ID=<tu-id-de-discord>
+export OAUTH_REDIRECT_URI=https://gw2item.com/backend/oauth_callback.php
+```
+
+`GOOGLE_CLIENT_ID` ahora corresponde al nuevo identificador de OAuth y `OAUTH_REDIRECT_URI` debe apuntar a la URL pública donde se encuentra `oauth_callback.php`.
+
 ### Endpoints disponibles
 
 Dentro de `backend/api/` existen tres endpoints principales que el frontend consume mediante `fetch`:
