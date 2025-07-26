@@ -39,7 +39,7 @@
                 const resp = await fetch('backend/api/user.php');
                 if (resp.ok) {
                     const urlParams = new URLSearchParams(window.location.search);
-                    const redirect = urlParams.get('redirect') || 'cuenta.html';
+                    const redirect = urlParams.get('redirect') || '/cuenta';
                     window.location.href = redirect;
                 } else {
                     document.getElementById('status').textContent = 'No hay sesión activa.';

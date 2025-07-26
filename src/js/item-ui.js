@@ -64,7 +64,7 @@ function renderRows(ings, nivel = 1, parentId = null, rowGroupIndex = 0, parentE
     return `
       <tr data-path="${currentPath}" class="${isChild ? `subrow subrow-${nivel} ${extraClass}` : ''} ${rowBgClass}" ${extraStyle}>
         <td class="th-border-left-items" ${indent}><img src="${ing.icon}" width="32"></td>
-        <td><a href="item.html?id=${ing.id}" class="item-link ${rarityClass}" target="_blank">${ing.name}</a></td>
+        <td><a href="/item?id=${ing.id}" class="item-link ${rarityClass}" target="_blank">${ing.name}</a></td>
         <td>${ing.countTotal || ing.count}</td>
         <td class="item-solo-buy">
           <div>${formatGoldColored(ing.total_buy)}</div>

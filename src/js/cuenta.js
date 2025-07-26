@@ -6,7 +6,7 @@ if (typeof window.StorageUtils === 'undefined') {
 document.addEventListener('DOMContentLoaded', async function() {
     const resp = await fetch('backend/api/user.php');
     if (!resp.ok) {
-        window.location.href = 'login.html';
+        window.location.href = '/login';
         return;
     }
     const user = await resp.json();
@@ -132,7 +132,7 @@ async function loadAndDisplayFavoritos() {
         
         // Enlace al ítem (nombre se actualizará tras fetch)
         const link = document.createElement('a');
-        link.href = `item.html?id=${item.id}`;
+        link.href = `/item?id=${item.id}`;
         link.className = 'favorito-link';
         link.textContent = item.nombre || `Cargando...`;
 
@@ -250,7 +250,7 @@ async function loadAndDisplayComparativas() {
         const fecha = '';
 
         const link = document.createElement('a');
-        link.href = `compare-craft.html?ids=${comp.ids.join(',')}`;
+        link.href = `/compare-craft?ids=${comp.ids.join(',')}`;
         link.className = 'favorito-link';
         link.textContent = nombre;
 

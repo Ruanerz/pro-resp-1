@@ -91,5 +91,5 @@ $stmt = $pdo->prepare('INSERT INTO sessions (id, user_id) VALUES (?, ?)');
 $stmt->execute([$session_id, $user_id]);
 setcookie('session_id', $session_id, time()+86400*30, '/', '', false, true);
 
-header('Location: /cuenta.html');
+header('Location: /cuenta');
 ?>
